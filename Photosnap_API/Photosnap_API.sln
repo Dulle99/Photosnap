@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33122.133
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Photosnap_API", "Photosnap_API\Photosnap_API.csproj", "{E1A57462-2BDD-4DEE-992E-0D73B51ABDEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Photosnap_Mongodb", "Photosnap_Mongodb\Photosnap_Mongodb.csproj", "{E5823471-AAB5-40C5-9CF7-9EA3E6C26928}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E1A57462-2BDD-4DEE-992E-0D73B51ABDEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1A57462-2BDD-4DEE-992E-0D73B51ABDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1A57462-2BDD-4DEE-992E-0D73B51ABDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1A57462-2BDD-4DEE-992E-0D73B51ABDEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5823471-AAB5-40C5-9CF7-9EA3E6C26928}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5823471-AAB5-40C5-9CF7-9EA3E6C26928}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5823471-AAB5-40C5-9CF7-9EA3E6C26928}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5823471-AAB5-40C5-9CF7-9EA3E6C26928}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CE763D18-0509-491A-A191-70CF60A9E658}
+	EndGlobalSection
+EndGlobal
