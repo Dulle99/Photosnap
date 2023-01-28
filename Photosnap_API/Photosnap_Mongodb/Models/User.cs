@@ -27,7 +27,11 @@ namespace Photosnap_Mongodb.Models
 
         public byte[] PasswordSalt { get; set; }
 
+        public List<MongoDBRef> UsersPhotos { get; set; }
+
         public List<PhotoCategory> PhotoCategoriesOfInterest { get; set; }
+
+        
 
         //Razmisliti da li i ovo ubaciti
         //public List<MongoDBRef> FollowingUsers { get; set; } 

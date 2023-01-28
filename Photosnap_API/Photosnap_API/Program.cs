@@ -13,6 +13,9 @@ builder.Services.AddSwaggerGen();
 
 var client = new MongoClient(builder.Configuration.GetSection("MongoDBConnectionSettings:Server").Value);
 var database = client.GetDatabase(builder.Configuration.GetSection("MongoDBConnectionSettings:Database").Value);
+database.CreateCollection("test");
+
+database.DropCollection("test");
 builder.Services.AddSingleton(database);
 
 #endregion ConnectingToDatabase

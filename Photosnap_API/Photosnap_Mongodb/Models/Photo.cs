@@ -1,4 +1,6 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,8 @@ namespace Photosnap_Mongodb.Models
     {
         #region Field(s)
 
-        public Guid PhotoId { get; set; }
+        [BsonId]
+        public ObjectId PhotoId { get; set; }
 
         public string Description { get; set; }
 
@@ -19,11 +22,12 @@ namespace Photosnap_Mongodb.Models
 
         public DateTime PublicationDate { get; set; }
 
-        public MongoDBRef AuthorOfThePhoto { get; set; }
+        //TODO Pitati profesira da li je dobra praksa da kreiram posebnu kolekciju tipa AuthorBasic sa osnovnim informacijama i da onda to emebdujem.
+        public User AuthorOfThePhoto { get; set; }
 
-        public MongoDBRef Category { get; set; }
+        public PhotoCategory Category { get; set; }
 
-        public List<MongoDBRef> Comments { get; set; }
+        public List<Comment> Comments { get; set; }
 
         #endregion Field(s)
 
@@ -31,7 +35,6 @@ namespace Photosnap_Mongodb.Models
 
         public Photo() 
         {
-            PhotoId = Guid.NewGuid();
             PublicationDate = DateTime.Now;
             Comments = new List<MongoDBRef>();
         }

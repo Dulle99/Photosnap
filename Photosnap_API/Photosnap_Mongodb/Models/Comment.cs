@@ -1,4 +1,7 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,11 +13,16 @@ namespace Photosnap_Mongodb.Models
     {
         #region Field(s)
 
-        public Guid CommentId { get; set; }
+        [BsonId]
+        public ObjectId CommentId { get; set; }
 
         public string CommentContent { get; set; }
 
         public DateTime PublicationDate { get; set; }
+
+        public User AuthorOfComment { get; set; }
+
+        public MongoDBRef AssociatedToPhoto { get; set; }
 
         #endregion Field(s)
 

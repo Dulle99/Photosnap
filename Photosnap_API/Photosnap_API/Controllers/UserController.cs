@@ -8,13 +8,10 @@ namespace Photosnap_API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-
+        IMongoDatabase _database;
         public UserController(IMongoDatabase database)
         {
-            Console.WriteLine(database.ToString());
+            _database= database;
         }
-
-
-
     }
 }

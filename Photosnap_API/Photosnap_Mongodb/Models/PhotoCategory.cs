@@ -1,4 +1,6 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +13,12 @@ namespace Photosnap_Mongodb.Models
     {
         #region Field(s)
 
+        [BsonId]
+        public ObjectId PhotoCategoryId { get; set; }
+
         public string CategoryName { get; set; }
 
         public string CategoryColor { get; set; }
-
-        public List<User> UsersInterestedOfCategory { get; set; }
 
         public List<MongoDBRef> Photos { get; set; }
 
@@ -25,7 +28,6 @@ namespace Photosnap_Mongodb.Models
 
         public PhotoCategory()
         {
-            UsersInterestedOfCategory= new List<User>();
             Photos = new List<MongoDBRef>();
         }  
 
