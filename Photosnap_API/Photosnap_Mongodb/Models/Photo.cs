@@ -22,6 +22,8 @@ namespace Photosnap_Mongodb.Models
 
         public DateTime PublicationDate { get; set; }
 
+        public int NumberOfLikes { get; set; }
+
         //TODO Pitati profesira da li je dobra praksa da kreiram posebnu kolekciju tipa AuthorBasic sa osnovnim informacijama i da onda to emebdujem.
         public User AuthorOfThePhoto { get; set; }
 
@@ -36,7 +38,7 @@ namespace Photosnap_Mongodb.Models
         public Photo() 
         {
             PublicationDate = DateTime.Now;
-            Comments = new List<MongoDBRef>();
+            Comments = new List<Comment>();
         }
 
         #endregion Constructor

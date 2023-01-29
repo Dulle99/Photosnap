@@ -14,9 +14,9 @@ namespace Photosnap_Mongodb.Models
         [BsonId]
         public ObjectId LikeId { get; set; }
 
-        public MongoDBRef UserId { get; set; }
+        public ObjectId UserId { get; set; }
 
-        public MongoDBRef PhotoId { get; set; }
+        public ObjectId PhotoId { get; set; }
 
         public DateTime Timestamp {get; set;}
 

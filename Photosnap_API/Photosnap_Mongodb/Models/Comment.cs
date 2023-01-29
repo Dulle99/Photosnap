@@ -30,7 +30,6 @@ namespace Photosnap_Mongodb.Models
 
         public Comment() 
         {
-            CommentId = Guid.NewGuid();
             PublicationDate = DateTime.Now;
         }
 
