@@ -39,6 +39,7 @@ namespace Photosnap_Mongodb.Models
         {
             PublicationDate = DateTime.Now;
             Comments = new List<Comment>();
+            NumberOfLikes = 0;
         }
 
         #endregion Constructor

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Photosnap_Mongodb.DTO_s.PhotoDTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,6 @@ namespace Photosnap_Mongodb.Service.PhotoService
 {
     public interface IPhotoService
     {
+        public Task<bool> CreatePhoto(BasicPhotoDTO photo);
     }
 }

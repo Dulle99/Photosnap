@@ -1,4 +1,4 @@
-﻿using Photosnap_Mongodb.DTO_s.User;
+﻿using Photosnap_Mongodb.DTO_s.UserDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +9,7 @@ namespace Photosnap_Mongodb.Service.UserService
 {
     public interface IUserService
     {
-        public Task CreateUser(UserDTO userBasicInformation);
+        public Task<LoginRegisterResponseDTO> CreateUser(UserDTO userBasicInformation);
+        public Task<LoginRegisterResponseDTO> Login(UserCredentialsDTO credentials);
     }
 }

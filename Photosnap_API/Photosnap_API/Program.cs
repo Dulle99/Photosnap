@@ -1,11 +1,12 @@
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -13,12 +14,27 @@ builder.Services.AddSwaggerGen();
 
 var client = new MongoClient(builder.Configuration.GetSection("MongoDBConnectionSettings:Server").Value);
 var database = client.GetDatabase(builder.Configuration.GetSection("MongoDBConnectionSettings:Database").Value);
-database.CreateCollection("test");
-
-database.DropCollection("test");
 builder.Services.AddSingleton(database);
 
 #endregion ConnectingToDatabase
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "Jwt";
+    options.DefaultChallengeScheme = "Jwt";
+}).AddJwtBearer("Jwt", options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false,
+        ValidateIssuer = false,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Lorem ipsum dolor sit amet, consectetur adipiscing elit")),
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromMinutes(5) 
+    };
+
+});
 
 var app = builder.Build();
 
@@ -28,6 +44,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(configurePolicy =>
+                configurePolicy.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
 app.UseHttpsRedirection();
 

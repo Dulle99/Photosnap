@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Photosnap_Mongodb.DTO_s.User
+namespace Photosnap_Mongodb.DTO_s.UserDTO
 {
     public class UserDTO
     {

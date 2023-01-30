@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
-using Photosnap_Mongodb.DTO_s.User;
+using Photosnap_API.Jwt;
+using Photosnap_Mongodb.DTO_s.UserDTO;
 using Photosnap_Mongodb.Service.UserService;
 
 namespace Photosnap_API.Controllers
@@ -24,14 +25,33 @@ namespace Photosnap_API.Controllers
         {
             try
             {
-                await _userService.CreateUser(userBasicDTO);
-                //TODO: Add JWT Token
-                return Ok();
+                var response = await _userService.CreateUser(userBasicDTO);
+                response.Token = JwtToken.GenerateToken(response.Username);
+                return new JsonResult(response);
             }
             catch(Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPost]
+        [Route("Login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Login([FromForm] UserCredentialsDTO credentials)
+        {
+            try
+            {
+                var loginResult = await _userService.Login(credentials);
+                if (loginResult.Username == credentials.Username)
+                {
+                    loginResult.Token = JwtToken.GenerateToken(loginResult.Username);
+                    return new JsonResult(loginResult);
+                }
+                return BadRequest(loginResult.LoginInformation);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
     }
 }
