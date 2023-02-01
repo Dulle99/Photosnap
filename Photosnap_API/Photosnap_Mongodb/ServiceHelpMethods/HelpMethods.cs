@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using Photosnap_Mongodb.Models;
 using Photosnap_Mongodb.Service;
+using Photosnap_Mongodb.ServiceHelpMethods.ParametarSimplifier;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
 
         public async static Task<bool> UsernameIsTaken(IMongoCollection<User> userCollection, string username)
         { 
-           if (await GetUserByUsername(userCollection, username) != null)
+           if (await GetDocumentByFieldValue(userCollection,"Username", username) != null)
                 return true;
 
             return false;
@@ -23,25 +24,17 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
 
         public async static Task<T> GetDocumentByFieldValue<T>(IMongoCollection<T> collection,string fieldName, string fieldValue)
         {
-            //TODO: Test 
             var filter = Builders<T>.Filter.Eq(fieldName, fieldValue);
             var cursor = await collection.FindAsync(filter);
             return cursor.FirstOrDefault();
         }
 
-        public async static Task<User> GetUserByUsername(IMongoCollection<User> userCollection, string username)
+        public static async Task UpdateFieldInCollecton<TDocument,TFilterFieldVal,TUpdateFieldValue>(IMongoCollection<TDocument> collection, string filterFieldName, TFilterFieldVal filterFieldValue,
+                                                                 string updateFieldName, TUpdateFieldValue updateFieldValue)
         {
-            var filter = Builders<User>.Filter.Eq("Username", username);
-            var cursor = await userCollection.FindAsync(filter);
-            return cursor.FirstOrDefault();
+            var filter = Builders<TDocument>.Filter.Eq(filterFieldName, filterFieldValue);
+            var update = Builders<TDocument>.Update.Set(updateFieldName, updateFieldValue);
+            await collection.UpdateOneAsync(filter, update);
         }
-
-        public async static Task<PhotoCategory> GetCategoryByName(IMongoCollection<PhotoCategory> photoCategoryCollection, string categoryName)
-        {
-            var filter = Builders<PhotoCategory>.Filter.Eq("CategoryName", categoryName);
-            var cursor = await photoCategoryCollection.FindAsync(filter);
-            return cursor.FirstOrDefault();
-        }
-
     }
 }

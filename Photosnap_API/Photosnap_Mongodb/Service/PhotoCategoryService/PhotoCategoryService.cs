@@ -20,6 +20,15 @@ namespace Photosnap_Mongodb.Service.PhotoCategoryService
             _photoCategoriesCollection = _db.GetCollection<PhotoCategory>(PhotosnapCollection.PhotoCategory);
         }
 
+
+        public async Task<List<PhotoCategory>> GetPhotoCategories()
+        {
+            var filter = Builders<PhotoCategory>.Filter.Empty;
+            var result = await this._photoCategoriesCollection.FindAsync(filter);
+            return result.ToList();
+            
+        }
+
         public async Task CreateCategory(PhotoCategoryDTO photoCategoryDTO)
         {
             try

@@ -1,7 +1,9 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using Photosnap_Mongodb.DTO_s.PhotoDTO;
 using Photosnap_Mongodb.Models;
 using Photosnap_Mongodb.ServiceHelpMethods;
+using Photosnap_Mongodb.ServiceHelpMethods.ParametarSimplifier;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,9 +38,20 @@ namespace Photosnap_Mongodb.Service.PhotoService
             photo.AuthorOfThePhoto = author;
             photo.Category = photoCategory;
             photo.Description = basicPhoto.Description;
-            //TODO: photo.FilePath
 
-            await this._photoCollection.InsertOneAsync(photo);
+            await _photoCollection.InsertOneAsync(photo);
+
+            var photoFilePath = PhotoStoringMethods.WritePhotoToFolder(basicPhoto.Photo, photo.PhotoId.ToString(), Enums.PhotoType.ContentPhoto);
+
+
+            await HelpMethods.UpdateFieldInCollecton(_photoCollection, "PhotoId", photo.PhotoId,
+                                                                              "PhotoFilePath", photoFilePath);
+
+            var photosByCategory = photoCategory.Photos;
+            photosByCategory.Add(new MongoDBRef(PhotosnapCollection.Photo,photo.PhotoId));
+            await HelpMethods.UpdateFieldInCollecton<PhotoCategory, ObjectId, List<MongoDBRef>>(categoryCollection, "PhotoCategoryId", photoCategory.PhotoCategoryId,
+                                                                                                "Photos", photosByCategory);
+
 
             return true;
         }
