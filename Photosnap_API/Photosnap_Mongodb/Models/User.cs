@@ -45,6 +45,7 @@ namespace Photosnap_Mongodb.Models
         public User() 
         {
             PhotoCategoriesOfInterest= new List<PhotoCategory>();
+            UserPhotos = new List<MongoDBRef>(); 
             PasswordSalt = new Guid().ToByteArray();
             NumberOfFollowers= 0;
             NumberOfPublishedPictures= 0;

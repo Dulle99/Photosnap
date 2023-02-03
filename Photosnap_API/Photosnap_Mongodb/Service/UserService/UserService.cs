@@ -58,7 +58,7 @@ namespace Photosnap_Mongodb.Service.UserService
             try
             {
                 //var user = await HelpMethods.GetUserByUsername(_userCollection, credentials.Username);
-                var user = await HelpMethods.GetDocumentByFieldValue<User>(_userCollection, "Username", credentials.Username);
+                var user = await HelpMethods.GetDocumentByFieldValue(_userCollection, "Username", credentials.Username);
                 LoginRegisterResponseDTO response = new LoginRegisterResponseDTO();
                 if (user != null)
                 {

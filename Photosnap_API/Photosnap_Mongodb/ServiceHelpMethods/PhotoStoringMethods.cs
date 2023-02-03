@@ -46,7 +46,7 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
             }
         }
 
-        public static void DeleteImageFromFolder(string photoName, PhotoType photoType)
+        public static void DeletePhotoFromFolder(string photoName, PhotoType photoType)
         {
             string folderPath = GetFolderPathByPhotoType(photoType);
             string photoFilePath = folderPath + photoName;

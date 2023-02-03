@@ -14,9 +14,7 @@ namespace Photosnap_Mongodb.Models
         #region Field(s)
 
         [BsonId]
-        public ObjectId test { get; set; }
-
-        public Guid PhotoId { get; set; }
+        public ObjectId PhotoId { get; set; }
 
         public string Description { get; set; }
 
@@ -39,7 +37,6 @@ namespace Photosnap_Mongodb.Models
 
         public Photo() 
         {
-            PhotoId= Guid.NewGuid();
             PublicationDate = DateTime.Now;
             Comments = new List<Comment>();
             NumberOfLikes = 0;

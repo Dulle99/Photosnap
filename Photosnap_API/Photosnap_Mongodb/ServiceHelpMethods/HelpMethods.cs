@@ -1,7 +1,7 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using Photosnap_Mongodb.Models;
 using Photosnap_Mongodb.Service;
-using Photosnap_Mongodb.ServiceHelpMethods.ParametarSimplifier;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +22,9 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
             return false;
         }
 
-        public async static Task<T> GetDocumentByFieldValue<T>(IMongoCollection<T> collection,string fieldName, string fieldValue)
+        public async static Task<TDocument> GetDocumentByFieldValue<TDocument, TValue>(IMongoCollection<TDocument> collection,string fieldName, TValue fieldValue)
         {
-            var filter = Builders<T>.Filter.Eq(fieldName, fieldValue);
+            var filter = Builders<TDocument>.Filter.Eq(fieldName, fieldValue);
             var cursor = await collection.FindAsync(filter);
             return cursor.FirstOrDefault();
         }
@@ -35,6 +35,16 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
             var filter = Builders<TDocument>.Filter.Eq(filterFieldName, filterFieldValue);
             var update = Builders<TDocument>.Update.Set(updateFieldName, updateFieldValue);
             await collection.UpdateOneAsync(filter, update);
+        }
+
+        public static async Task<bool> RemoveDocument<TDocument>(IMongoCollection<TDocument> collection, string filterFieldName, ObjectId documentId)
+        {
+            var filter = Builders<TDocument>.Filter.Eq(filterFieldName, documentId);
+            var deleteResult = await collection.DeleteOneAsync(filter);
+            if (deleteResult.IsAcknowledged)
+                return true;
+            return false;
+            
         }
     }
 }
