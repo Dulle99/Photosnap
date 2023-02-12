@@ -10,7 +10,7 @@ namespace Photosnap_Mongodb.Service.PhotoCategoryService
 {
     public interface IPhotoCategoryService
     {
-        public Task<List<PhotoCategory>> GetPhotoCategories();
+        public Task<List<PhotoCategoryDTO>> GetPhotoCategories();
         public Task CreateCategory(PhotoCategoryDTO photoCategoryDTO);
         public Task<bool> RemoveCategory(string categoryName);
     }

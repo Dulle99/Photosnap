@@ -57,9 +57,9 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
         {
             string folderPath = "";
             if (phototype == PhotoType.ContentPhoto)
-                folderPath = "C:\\Users\\DusanSotirov\\Desktop\\NBP Projects\\Photosnap_photos\\ContentPhotos";
+                folderPath = "C:\\Users\\DusanSotirov\\Desktop\\NBP Projects\\Photosnap_photos\\ContentPhotos\\";
             else
-                folderPath = "C:\\Users\\DusanSotirov\\Desktop\\NBP Projects\\Photosnap_photos\\ProfilePhotos";
+                folderPath = "C:\\Users\\DusanSotirov\\Desktop\\NBP Projects\\Photosnap_photos\\ProfilePhotos\\";
             return folderPath;
         }
     }

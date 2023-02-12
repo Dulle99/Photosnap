@@ -26,8 +26,6 @@ namespace Photosnap_Mongodb.Models
 
         public string ProfilePhotoFilePath { get; set; }
 
-        public int NumberOfPublishedPictures { get; set; }
-
         public int NumberOfFollowers { get; set; }
 
         public byte[] Password { get; set; }
@@ -48,7 +46,6 @@ namespace Photosnap_Mongodb.Models
             UserPhotos = new List<MongoDBRef>(); 
             PasswordSalt = new Guid().ToByteArray();
             NumberOfFollowers= 0;
-            NumberOfPublishedPictures= 0;
         }
 
         #endregion Constructor

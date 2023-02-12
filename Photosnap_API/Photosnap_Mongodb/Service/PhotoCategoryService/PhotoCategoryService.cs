@@ -2,6 +2,7 @@
 using Photosnap_Mongodb.DTO_s.PhotoCategoryDTO;
 using Photosnap_Mongodb.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,11 +22,16 @@ namespace Photosnap_Mongodb.Service.PhotoCategoryService
         }
 
 
-        public async Task<List<PhotoCategory>> GetPhotoCategories()
+        public async Task<List<PhotoCategoryDTO>> GetPhotoCategories()
         {
+            var photoCategoriesDTOs = new List<PhotoCategoryDTO>();
             var filter = Builders<PhotoCategory>.Filter.Empty;
             var result = await this._photoCategoriesCollection.FindAsync(filter);
-            return result.ToList();
+            var photoCategories = result.ToList();
+            foreach(var photoCategory in photoCategories ) 
+                photoCategoriesDTOs.Add(new PhotoCategoryDTO(photoCategory.CategoryName, photoCategory.CategoryColor));
+
+            return photoCategoriesDTOs;
             
         }
 

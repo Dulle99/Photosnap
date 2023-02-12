@@ -23,6 +23,12 @@ namespace Photosnap_Mongodb.DTO_s.PhotoCategoryDTO
 
         public PhotoCategoryDTO() { }
 
+        public PhotoCategoryDTO(string cateogoryName, string categoryColor) 
+        {
+            this.CategoryName = cateogoryName;  
+            this.CategoryColor = categoryColor; 
+        }
+
         #endregion Constructor
     }
 }

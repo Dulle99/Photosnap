@@ -44,7 +44,6 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
             if (deleteResult.IsAcknowledged)
                 return true;
             return false;
-            
         }
     }
 }
