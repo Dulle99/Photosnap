@@ -17,47 +17,47 @@ function Header() {
 
     return (
         <>
-            <Fragment>
-                <Toolbar
-                    sx={{
-                        background: '#BA1B2A',
-                        borderBottom: 1,
-                        borderColor: 'divider',
-                        display: "flex",
-                        flexWrap: "wrap"
+            <Toolbar
+                sx={{
+                    background: '#BA1B2A',
+                    borderBottom: 1,
+                    borderColor: 'divider',
+                    display: "flex",
+                    flexWrap: "wrap"
+                }}
+            >
+                <Container
+                    style={{
+                        display: 'flex',
+                        flex: 1,
+                        flexDirection: "row",
+                        flexWrap: 'wrap',
+                        justifyContent: 'left',
+
                     }}
                 >
-                    <Container
-                        style={{
-                            display: 'flex',
-                            flex: 1,
-                            flexDirection: "row",
-                            flexWrap: 'wrap',
-                            justifyContent: 'left',
+                    <Link to='homepage' style={{ textDecoration: 'none' }}>
+                        <Box sx={{ display: "flex" }} >
 
-                        }}
-                    >
-                        <Link to='homepage' style={{ textDecoration: 'none' }}>
-                            <Box sx={{ display: "flex" }} >
+                            <Typography
+                                align='center'
+                                color='#FFFFFF'
+                                component='h2'
+                                variant='h4'
+                                noWrap
+                            >
+                                {"Photosnap"}
+                            </Typography>
+                        </Box>
 
-                                <Typography
-                                    align='center'
-                                    color='#FFFFFF'
-                                    component='h2'
-                                    variant='h4'
-                                    noWrap
-                                >
-                                    {"Photosnap"}
-                                </Typography>
-                            </Box>
+                    </Link>
+                </Container>
+                <Box sx={{ flexGrow: 1, display: { xs: 'flex', justifyContent: "right" } }}>
+                    {isUserLogged == true ? <HeaderLoggedUserButtons /> : <HeaderNonLoggedUserButtons />}
+                </Box>
+            </Toolbar>
+            <Outlet />
 
-                        </Link>
-                    </Container>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', justifyContent: "right" } }}>
-                        {isUserLogged == true ? <HeaderLoggedUserButtons/> : <HeaderNonLoggedUserButtons />}
-                    </Box>
-                </Toolbar>
-            </Fragment>
         </>
     );
 }

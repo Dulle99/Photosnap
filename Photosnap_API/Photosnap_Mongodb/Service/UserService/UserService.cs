@@ -80,6 +80,46 @@ namespace Photosnap_Mongodb.Service.UserService
             catch (Exception ex) { throw new Exception("Error occured during login procces."); }
         }
 
+        #endregion RegisterAndLogin
+
+        #region Create
+
+        public async Task FollowUser(string loggedUser, string followingUser)
+        {
+            var followrsCollection = this._mongoDB.GetCollection<Follow>(PhotosnapCollection.Following);
+            
+
+        }
+        
+
+        public async Task LikePhoto(string loggedUser, string photoId)
+        {
+
+        }
+
         #endregion Create
+
+        #region Get
+
+        #endregion Get
+
+        #region Update
+
+        #endregion Update
+
+        #region Delete
+
+        public async Task UnfollowUser(string loggedUsername, string usernameForUnfollowing)
+        {
+
+        }
+
+
+        public async Task UnlikePhoto(string loggedUser, string photoId)
+        {
+
+        }
+
+        #endregion Delete
     }
 }

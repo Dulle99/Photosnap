@@ -1,5 +1,5 @@
 import { Button, Typography } from "@mui/material";
-import { HeaderButtonProp } from "./header-button-prop";
+import { HeaderButtonProp } from "../../Types/HeaderTypes/header-button-prop";
 
 function HeaderButton(prop: HeaderButtonProp) {
     return (
