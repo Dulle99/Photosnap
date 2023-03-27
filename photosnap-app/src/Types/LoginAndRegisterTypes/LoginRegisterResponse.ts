@@ -1,7 +1,7 @@
 type LoginRegisterResponse = {
     username: string;
-    typeOfUser: string;
+    profilePhoto: string;
     token: string;
-    loginInformation: string;
+    responseInformation: string;
 }
 export default LoginRegisterResponse;

@@ -1,11 +1,15 @@
-import { Alert, AlertTitle, Box, Button, CssBaseline, Grid, TextField, Typography } from "@mui/material";
+import { Alert, AlertTitle, Avatar, Box, Button, CssBaseline, Grid, TextField, Typography } from "@mui/material";
 import { Container } from "@mui/system";
-import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import IUserLoggedStatusChange from "../../Interfaces/LoginAndRegisterInterfaces/IUserLogged";
 import LoginRegisterResponse from "../../Types/LoginAndRegisterTypes/LoginRegisterResponse";
 
 function Register(prop: IUserLoggedStatusChange) {
+    let navigate = useNavigate();
+    const [formData, setFormData] = useState(new FormData);
+    const [profilePhotoPreview, setProfilePhotoPreview] = useState(new Blob);
     const [name, setName] = useState("");
     const [lastname, setLastName] = useState("");
     const [biography, setBiography] = useState("");
@@ -13,6 +17,7 @@ function Register(prop: IUserLoggedStatusChange) {
     const [password, setPassword] = useState("");
     const [isUserLogged, setIsUserLogged] = useState(false);
     const [areFieldsValid, setAreFieldsValid] = useState(true);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleNameChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         setName(e.currentTarget.value);
@@ -31,19 +36,66 @@ function Register(prop: IUserLoggedStatusChange) {
         setBiography(e.currentTarget.value);
     }
 
+    const handleChangePicture: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        if (e.target.files !== null) {
+            setProfilePhotoPreview(e.target.files[0]);
+            formData.delete("profilePhoto");
+            let form = new FormData();
+            for (let i = 0; i < e.target.files.length; i++) {
+                let element = e.target.files[i];
+                form.append('profilePhoto', element);
+            }
+            setFormData(form);
+        }
+    }
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (name.length == 0 || lastname.length == 0 || biography.length == 0 || username.length == 0 || password.length == 0)
+        formData.delete("username"); formData.delete("name");
+        formData.delete("lastname"); formData.delete("biography");
+        formData.delete("password");
+
+        if (name.length == 0 || lastname.length == 0 || biography.length == 0 || username.length == 0 || password.length == 0){
             setAreFieldsValid(false);
-        else
-            setAreFieldsValid(true);
+            setErrorMessage("all fields must be filed!");
+        }
+        else {
+            formData.append("username", username); formData.append("name", name);
+            formData.append("lastname", lastname); formData.append("biography", biography);
+            formData.append("password", password);
+
+            axios.post<LoginRegisterResponse>('https://localhost:7053/api/User/RegisterUser', formData)
+                .then((response) => {
+                    if (response.status === 200) {
+                        setAreFieldsValid(true);
+                        window.sessionStorage.setItem("token", response.data.token);
+                        window.sessionStorage.setItem("username", response.data.username);
+                        window.sessionStorage.setItem("profilePhoto", response.data.profilePhoto);
+                        window.sessionStorage.setItem("isUserLogged", "true");
+
+                        setIsUserLogged(true);
+                        navigate(-1);
+                        prop.userLogged();
+                    }
+                })
+                .catch((err) => {
+                    setErrorMessage("username is already taken!"); 
+                    setAreFieldsValid(false);
+                 });
+
+
+        }
     }
+
+    useEffect(() => {
+        document.title = "Register";
+    }, []);
 
     const handlersForFirstConfig: React.ChangeEventHandler<HTMLInputElement>[] = [handleNameChange, handleLastnameChange];
     const handlersForSecondConfig: React.ChangeEventHandler<HTMLInputElement>[] = [handleUsernameChange, handlePasswordChange, handleBiographyChange];
 
-    const firstConfigs: string[][] = [["Ime", "Ime", "ime"], ["Prezime", "Prezime", "prezime"]];
-    const secondConfigs: string[][] = [["Korisničko ime", "KorisnickoIme", "korisnickoIme", "text"], ["Lozinka", "Lozinka", "lozinka", "password"], ["Biografija", "Biografija", "biografija", "text"]];
+    const firstConfigs: string[][] = [["Name", "Name", "name"], ["Last name", "Lastname", "lastname"]];
+    const secondConfigs: string[][] = [["Username", "Username", "username", "text"], ["Password", "Password", "password", "password"], ["Biography", "Biography", "biography", "text"]];
     return (
         <>
             <Container component="main" maxWidth="sm">
@@ -57,10 +109,36 @@ function Register(prop: IUserLoggedStatusChange) {
                         alignItems: 'center',
                     }}
                 >
-                    <Typography component="h1" variant="h3"> Kreiraj Photosnap nalog  </Typography>
+                    <Typography component="h1" variant="h4"> Create Photosnap account  </Typography>
 
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, textAlign: "center" }}>
-                        <Grid container spacing={2}>
+                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, textAlign: "center" }}   >
+                        <Grid container spacing={2}   >
+                            <Grid item xs={12} container={true} direction={"column"} display={"flex"}>
+
+                                <Avatar
+                                    sx={{ width: 200, height: 200, alignSelf: "center" }}
+                                    src={URL.createObjectURL(profilePhotoPreview)} />
+                                <Box width={"auto"}>
+
+                                    <Button
+                                        fullWidth={false}
+                                        size="small"
+                                        variant="contained"
+                                        component="label"
+                                        sx={{
+                                            mt: 3, mb: 2, background: '#BA1B2A', ':hover': {
+                                                bgcolor: '#E65664',
+                                                color: 'FFFFFF',
+                                            },
+                                        }}
+                                    >
+                                        Add profile photo
+                                        <input accept="image/*" type="file" hidden onChange={handleChangePicture} />
+                                    </Button>
+                                </Box>
+                            </Grid>
+
+
                             {firstConfigs.map((conf, ind) => (
                                 <Grid item xs={12} sm={6} key={conf[0]}>
                                     <TextField
@@ -69,7 +147,7 @@ function Register(prop: IUserLoggedStatusChange) {
                                         id={conf[2]}
                                         required
                                         fullWidth
-                                        autoFocus={conf[1] === "Ime" ? true : false}
+                                        autoFocus={conf[1] === "Name" ? true : false}
                                         onChange={handlersForFirstConfig[ind]}
                                     />
                                 </Grid>
@@ -85,8 +163,8 @@ function Register(prop: IUserLoggedStatusChange) {
                                         required
                                         fullWidth
                                         onChange={handlersForSecondConfig[ind]}
-                                        multiline= {conf[1] == "Biografija" ? true : false}
-                                        rows= {conf[1] == "Biografija" ? 6 : 1}
+                                        multiline={conf[1] == "Biography" ? true : false}
+                                        rows={conf[1] == "Biography" ? 6 : 1}
                                     />
                                 </Grid>
                             ))}
@@ -94,9 +172,9 @@ function Register(prop: IUserLoggedStatusChange) {
 
 
                         {areFieldsValid === false ?
-                            <Alert severity="warning" sx={{marginTop: "10px"}}>
-                                <AlertTitle >Upozorenje</AlertTitle>
-                                <strong>Sva polja moraju biti popunjena</strong>
+                            <Alert severity="warning" sx={{ marginTop: "10px" }}>
+                                <AlertTitle >Warning - <strong>{errorMessage}</strong></AlertTitle>
+
                             </Alert> : ""}
 
                         <Button
@@ -110,7 +188,7 @@ function Register(prop: IUserLoggedStatusChange) {
                                 },
                             }}
                         >
-                            Kreiraj nalog
+                            Create account
                         </Button>
 
                     </Box>

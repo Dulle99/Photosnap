@@ -5,12 +5,12 @@ function HeaderNonLoggedUserButtons() {
     return (
         <>
             <Link to='/Login' style={{ textDecoration: 'none' }} >
-                <HeaderButton buttonName='Prijavi se' />
+                <HeaderButton buttonName='Login' />
             </Link>
 
 
             <Link to='/Register' style={{ textDecoration: 'none' }}>
-                <HeaderButton buttonName='Registruj se' />
+                <HeaderButton buttonName='Register' />
             </Link>
         </>
     );

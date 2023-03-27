@@ -31,26 +31,14 @@ function Login(prop: IUserLoggedStatusChange) {
             const formData = new FormData();
             formData.append("username", username);
             formData.append("password", password);
-            axios.post<LoginRegisterResponse>('https://localhost:5001/api/User/Login', formData)
+            axios.post<LoginRegisterResponse>('https://localhost:7053/api/User/Login', formData)
                 .then((response) => {
                     if (response.status === 200) {
                         setInvalidCredentialsFlag(false);
                         window.sessionStorage.setItem("token", response.data.token);
                         window.sessionStorage.setItem("username", response.data.username);
-                        window.sessionStorage.setItem("typeOfUser", response.data.typeOfUser);
+                        window.sessionStorage.setItem("profilePhoto", response.data.profilePhoto);
                         window.sessionStorage.setItem("isUserLogged", "true");
-
-                        axios.get(`https://localhost:5001/api/User/GetUserProfilePicture/${response.data.username}/${response.data.typeOfUser}`,
-                            {
-                                headers: {
-                                    'Authorization': 'Bearer ' + window.sessionStorage.getItem("token")
-                                },
-                            })
-                            .then((response) => {
-                                if (response.status === 200) {
-                                    window.sessionStorage.setItem("profilePicture", response.data);
-                                }
-                            });
 
                         setIsLoginSuccesful(true);
                         navigate(-1);
@@ -62,7 +50,7 @@ function Login(prop: IUserLoggedStatusChange) {
     };
 
     useEffect(() => {
-        document.title = "Prijavljivanje";
+        document.title = "Login";
     }, []);
 
     return (
@@ -78,17 +66,17 @@ function Login(prop: IUserLoggedStatusChange) {
                 }}
 
             >
-                <Typography variant="h2">Dobrodošli nazad na Photosnap</Typography>
+                <Typography variant="h2">Welcome back on Photosnap</Typography>
 
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ textAlign: 'center' }} >
                     <TextField
                         margin="normal"
                         required
                         fullWidth
-                        id="korisnickoIme"
-                        label="Korisnicko ime"
-                        name="korisnickoIme"
-                        autoComplete="Korisnicko ime"
+                        id="username"
+                        label="Username"
+                        name="username"
+                        autoComplete="Username"
                         autoFocus
                         onChange={handleUsernameChange}
                         color={username.length ? 'primary' : 'error'}
@@ -98,9 +86,9 @@ function Login(prop: IUserLoggedStatusChange) {
                         margin="normal"
                         required
                         fullWidth
-                        id="lozinka"
-                        label="Lozinka"
-                        name="lozinka"
+                        id="password"
+                        label="Password"
+                        name="password"
                         type="password"
                         autoComplete="current-password"
                         value={password}
@@ -112,7 +100,7 @@ function Login(prop: IUserLoggedStatusChange) {
                     {invalidCredentialsFlag === true ?
                         <Alert severity="warning">
                             <AlertTitle >Upozorenje</AlertTitle>
-                            Korisnik sa unetim korisničkim imenom ili lozinkom ne postoji — <strong>proverite na moguće slovne greške</strong>
+                            User with given username and password does not exist — <strong>check for mispeling!</strong>
                         </Alert> : ""}
 
 
@@ -127,7 +115,7 @@ function Login(prop: IUserLoggedStatusChange) {
                             },
                         }}
                     >
-                        Prijavite se
+                        Login
                     </Button>
 
                 </Box>
@@ -140,7 +128,7 @@ function Login(prop: IUserLoggedStatusChange) {
                 alignItems: 'center'
             }}>
                 <Divider variant="fullWidth" flexItem />
-                <Typography variant="h5"> Nemate nalog? Registrujte se sada!</Typography>
+                <Typography variant="h5"> Don't have an account? Register now!</Typography>
                 <Link to='/Register' style={{ textDecoration: 'none' }}>
                     <Button
                         type="submit"
@@ -153,7 +141,7 @@ function Login(prop: IUserLoggedStatusChange) {
                             },
                         }}
                     >
-                        Registrujte se
+                        Register
                     </Button>
                 </Link>
             </Box>

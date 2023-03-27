@@ -33,7 +33,7 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
             try
             {
                 string folderPath = GetFolderPathByPhotoType(photoType);
-                string photoFilePath = folderPath + photoName + ".jpg";
+                string photoFilePath = folderPath + photoName; //+ ".jpg";
                 byte[] photo = File.ReadAllBytes(photoFilePath);
                 if (photo.Length > 0)
                     return photo;

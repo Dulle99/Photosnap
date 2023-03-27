@@ -20,7 +20,7 @@ function Homepage() {
                     color="text.primary">{homepageText}
                 </Typography>
                 <Grid>
-                    {/*recommendedCookingRecepies.map((cookingRecepie) => (<CookingRecepiePreview {...cookingRecepie} key={cookingRecepie.cookingRecepieId} />))*/}
+                    
                 </Grid>
             </Grid>
 
