@@ -5,6 +5,7 @@ import Header from './components/Header/Header';
 import Homepage from './components/Homepage/Homepage';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
+import SelfUserProfile from './components/UserProfile/SelfUserProfile';
 
 function App() {
   let navigate = useNavigate();
@@ -29,9 +30,11 @@ function App() {
       <Routes>
         <Route path='/' element={<Header />}>
           <Route path='homepage' element={<Homepage />} />
+          <Route path='MyProfile' element={<SelfUserProfile/>} />
         </Route>
         <Route path='Login' element={<Login userLogged={userLogged} />} />
         <Route path='Register' element={<Register userLogged={userLogged} />} />
+        
       </Routes>
     </>
   );

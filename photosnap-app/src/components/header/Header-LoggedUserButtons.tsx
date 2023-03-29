@@ -1,6 +1,6 @@
 import { Avatar } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import HeaderButton from "./Header-Button";
 
 
@@ -18,8 +18,8 @@ function HeaderLoggedUserButtons(){
                 <HeaderButton buttonName='Post photo' />
             </Link>
 
-            <Link to='/YourProfile' style={{ textDecoration: 'none' }}>
-                <HeaderButton buttonName='Your profile' />
+            <Link to='/MyProfile' style={{ textDecoration: 'none' }}>
+                <HeaderButton buttonName='My profile' />
             </Link>
 
             <Link to='/Logout' style={{ textDecoration: 'none' }}>
@@ -28,6 +28,7 @@ function HeaderLoggedUserButtons(){
 
             <Avatar sx={{ width: 43, height: 43}} src={sessionStorage.getItem('profilePhoto') !== null ? 
                         `data:image/jpeg;base64,${sessionStorage.getItem('profilePhoto')}` : "" } />
+
         </>
       );
 }
