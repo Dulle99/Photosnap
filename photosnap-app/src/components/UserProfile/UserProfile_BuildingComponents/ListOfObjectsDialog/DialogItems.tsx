@@ -7,6 +7,8 @@ import UserItem from "./Items/UserItem";
 import CategoryItemType from "../../../../Types/CategoryType/CategoryItemType";
 import CategoryItem from "./Items/CategoryItem";
 import DialogItemsProp from "../../../../Interfaces/UserProfile/DialogProps/IDialogItems";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { type } from "os";
 
 
 
@@ -17,8 +19,8 @@ function DialogItems(props: DialogItemsProp) {
 
     useEffect(() => {
         console.log(props.username);
-            console.log(sessionStorage.getItem("username"));
-        if (sessionStorage.getItem("username") === props.username){
+        console.log(sessionStorage.getItem("username"));
+        if (sessionStorage.getItem("username") === props.username) {
             console.log(props.username);
             console.log(sessionStorage.getItem("username"));
             setUserWatchSelfProfileFlag(true);
@@ -26,17 +28,16 @@ function DialogItems(props: DialogItemsProp) {
     }, []);
 
     useEffect(() => {
-        let fetchString = "";
         if (props.itemsType === DialogItemsType.listOfFollowers) {
-            let f1: UserItemType[] = [{username:"Ivan", profilePhoto: ""}, {username:"Aleks", profilePhoto: ""}]; 
+            let f1: UserItemType[] = [{ username: "Ivan", profilePhoto: "" }, { username: "Aleks", profilePhoto: "" }];
             setUsers(f1);
         }
         else if (props.itemsType === DialogItemsType.listOfFollowings) {
-            let f2: UserItemType[] = [{username:"Petar", profilePhoto: ""}, {username:"Nenad", profilePhoto: ""}]; 
+            let f2: UserItemType[] = [{ username: "Petar", profilePhoto: "" }, { username: "Nenad", profilePhoto: "" }];
             setUsers(f2);
         }
         else if (props.itemsType === DialogItemsType.listOfCategories) {
-            let c: CategoryItemType[] = [{categoryName:"Nature", categoryColor:"#00C039"}, {categoryName:"Archiceture", categoryColor:"#897682"}];
+            let c: CategoryItemType[] = [{ categoryName: "Nature", categoryColor: "#00C039" }, { categoryName: "Archiceture", categoryColor: "#897682" }];
             setCategories(c);
         }
     }, []);
@@ -44,7 +45,7 @@ function DialogItems(props: DialogItemsProp) {
     if (props.itemsType === DialogItemsType.listOfFollowers) {
         return (
             <>
-                <Box sx={{ display: "flex", flexDirection: "column", justifyContent:"flex-start" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
                     {users.map((el, ind) => (
                         <UserItem username={el.username} profilePhoto={el.profilePhoto} key={ind} />
                     ))}
@@ -55,11 +56,11 @@ function DialogItems(props: DialogItemsProp) {
     else if (props.itemsType === DialogItemsType.listOfFollowings) {
         return (
             <>
-                <Box sx={{ display: "flex", flexDirection: "column", justifyContent:"flex-start"  }}>
+                <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
                     {users.map((el, ind) => (
-                        <Grid key={"grid"+ind} sx={{display:"flex",flexDirection:"row", justifyContent:"space-between"}} >
-                            <UserItem username={el.username} profilePhoto={el.profilePhoto} key={"user"+ind} />
-                            {userWatchSelfProfileFlag===true ? <Button key={ind}> <Typography>Remove</Typography> </Button> : "" }
+                        <Grid key={"grid" + ind} sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 1 }} >
+                            <UserItem username={el.username} profilePhoto={el.profilePhoto} key={"user" + ind} />
+                            {userWatchSelfProfileFlag === true ? <Button size="small" key={ind} sx={{ background: '#FFFFFF', marginLeft:2}}> <DeleteIcon sx={{ color: '#E65664' }} /> </Button> : ""}
                         </Grid>
                     ))}
 
@@ -70,11 +71,14 @@ function DialogItems(props: DialogItemsProp) {
     else {
         return (
             <>
-                <Box sx={{ display: "flex", flexDirection: "column", justifyContent:"flex-start"  }}>
+                <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
                     {categories.map((el, ind) => (
-                        <Grid key={"g"+ind} sx={{marginTop:1, display:"flex",flexDirection:"row", justifyContent:"space-between"}} >
-                            <CategoryItem categoryName={el.categoryName} categoryColor={el.categoryColor} key={"user"+ind}  />
-                            {userWatchSelfProfileFlag ?<Button key={ind}> <Typography>Remove</Typography> </Button> : "" }
+                        <Grid key={"g" + ind} sx={{ marginTop: 1, display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
+                            <CategoryItem categoryName={el.categoryName} categoryColor={el.categoryColor} key={"user" + ind} />
+                            {userWatchSelfProfileFlag ? 
+                            <Button key={ind} sx={{ background: '#FFFFFF',  marginLeft:2}}>
+                                 <DeleteIcon sx={{ color: '#E65664', }} />
+                                </Button> : ""}
                         </Grid>
                     ))}
 
