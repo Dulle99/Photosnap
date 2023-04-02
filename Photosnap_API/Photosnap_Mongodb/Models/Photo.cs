@@ -31,12 +31,15 @@ namespace Photosnap_Mongodb.Models
 
         public List<Comment> Comments { get; set; }
 
+        public List<ObjectId> PhotoLikes { get; set; }
+
         #endregion Field(s)
 
         #region Constructor
 
         public Photo() 
         {
+            PhotoLikes = new List<ObjectId>();  
             PublicationDate = DateTime.Now;
             Comments = new List<Comment>();
             NumberOfLikes = 0;

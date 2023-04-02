@@ -25,6 +25,8 @@ namespace Photosnap_Mongodb.Service.PhotoService
             _photoCollection = _mongoDB.GetCollection<Photo>(PhotosnapCollection.Photo);
         }
 
+        #region Create
+
         public async Task<bool> CreatePhoto(BasicPhotoDTO basicPhoto)
         {
 
@@ -42,12 +44,12 @@ namespace Photosnap_Mongodb.Service.PhotoService
             photo.Description = basicPhoto.Description;
             await _photoCollection.InsertOneAsync(photo);
 
-            
+
             var photoFilePath = PhotoStoringMethods.WritePhotoToFolder(basicPhoto.Photo, photo.PhotoId.ToString(), Enums.PhotoType.ContentPhoto);
             await HelpMethods.UpdateFieldInCollecton(_photoCollection, "PhotoId", photo.PhotoId, "PhotoFilePath", photoFilePath);
 
             var photosByCategory = photoCategory.Photos;
-            photosByCategory.Add(new MongoDBRef(PhotosnapCollection.Photo,photo.PhotoId));
+            photosByCategory.Add(new MongoDBRef(PhotosnapCollection.Photo, photo.PhotoId));
             await HelpMethods.UpdateFieldInCollecton(categoryCollection, "PhotoCategoryId", photoCategory.PhotoCategoryId, "Photos", photosByCategory);
 
             var userPhotos = author.UserPhotos;
@@ -72,6 +74,61 @@ namespace Photosnap_Mongodb.Service.PhotoService
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
+        #endregion Create
+
+        #region Get
+
+
+        #endregion Get
+
+        #region Update
+
+        public async Task LikePhoto(string userUsername, string photoId)
+        {
+            var userCollection = this._mongoDB.GetCollection<User>(PhotosnapCollection.User);
+            var user = await HelpMethods.GetDocumentByFieldValue(userCollection, "Username", userUsername);
+
+            var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId", new ObjectId(photoId)); 
+
+            if (user != null && photo != null)
+            {
+                var likeCollection = this._mongoDB.GetCollection<Like>(PhotosnapCollection.Like);
+                var like = new Like(user.UserId, photo.PhotoId);
+                await likeCollection.InsertOneAsync(like);
+
+                await HelpMethods.PushValueInFieldCollection(userCollection, "UserId", user.UserId, "UserLikes", like.LikeId);
+                await HelpMethods.PushValueInFieldCollection(this._photoCollection, "PhotoId", photo.PhotoId, "PhotoLikes", like.LikeId);
+            }
+            else
+                throw new Exception("Objects not found");
+        }
+
+
+        public async Task UnlikePhoto(string userUsername, string photoId)
+        {
+            var userCollection = this._mongoDB.GetCollection<User>(PhotosnapCollection.User);
+            var user = await HelpMethods.GetDocumentByFieldValue(userCollection, "Username", userUsername);
+
+            var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId",new ObjectId(photoId));
+
+            if (user != null && photo != null)
+            {
+                var likeCollection = this._mongoDB.GetCollection<Like>(PhotosnapCollection.Like);
+                var like = await HelpMethods.GetDocumentByFieldValue(likeCollection, "UserId", user.UserId);
+
+                await HelpMethods.PopValueInFieldCollection(userCollection, "UserId", user.UserId, "UserLikes", like.LikeId);
+                await HelpMethods.PopValueInFieldCollection(this._photoCollection, "PhotoId", photo.PhotoId, "PhotoLikes", like.LikeId);
+
+                await HelpMethods.RemoveDocument(likeCollection, "LikeId", like.LikeId);
+            }
+            else
+                throw new Exception("Objects not found");
+        }
+
+        #endregion Update
+
+        #region Delete
+
         public async Task<bool> DeletePhoto(string photoId)
         {
             ObjectId _photoId = new ObjectId(photoId);
@@ -95,10 +152,18 @@ namespace Photosnap_Mongodb.Service.PhotoService
 
 
             //TODO: remove comments associated to photo
-            
+
 
             PhotoStoringMethods.DeletePhotoFromFolder(photoId.ToString(), PhotoType.ContentPhoto);
             return await HelpMethods.RemoveDocument(_photoCollection, "PhotoId", _photoId);
         }
+
+        #endregion Delete
+
+
+
+
+
+       
     }
 }

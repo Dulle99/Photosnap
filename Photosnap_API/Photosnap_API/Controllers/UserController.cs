@@ -53,5 +53,33 @@ namespace Photosnap_API.Controllers
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
+
+        [HttpPut]
+        [Route("Follow/{username}/{usernameToBeFollowed}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Follow(string username, string usernameToBeFollowed)
+        {
+            try
+            {
+               await _userService.FollowUser(username, usernameToBeFollowed);
+                return Ok();
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpPut]
+        [Route("Unfollow/{username}/{usernameToBeUnfollowed}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Unfollow(string username, string usernameToBeUnfollowed)
+        {
+            try
+            {
+                await _userService.UnfollowUser(username, usernameToBeUnfollowed);
+                return Ok();
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
     }
 }

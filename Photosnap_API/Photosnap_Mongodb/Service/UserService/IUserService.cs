@@ -12,10 +12,9 @@ namespace Photosnap_Mongodb.Service.UserService
         public Task<LoginRegisterResponseDTO> CreateUser(UserDTO userBasicInformation);
         public Task<LoginRegisterResponseDTO> Login(UserCredentialsDTO credentials);
 
-        public Task FollowUser(string loggedUser, string followingUser);
-        public Task UnfollowUser(string loggedUsername, string usernameForUnfollowing);
+        public Task FollowUser(string loggedUserUsername, string userUsernameToBeFollowed);
+        public Task UnfollowUser(string loggedUserUsername, string userUsernameForUnfollowing);
 
-        public Task LikePhoto(string loggedUser, string photoId);
-        public Task UnlikePhoto(string loggedUser, string photoId);
+
     }
 }

@@ -57,7 +57,6 @@ namespace Photosnap_Mongodb.Service.UserService
         {
             try
             {
-                //var user = await HelpMethods.GetUserByUsername(_userCollection, credentials.Username);
                 var user = await HelpMethods.GetDocumentByFieldValue(_userCollection, "Username", credentials.Username);
                 LoginRegisterResponseDTO response = new LoginRegisterResponseDTO();
                 if (user != null)
@@ -84,18 +83,26 @@ namespace Photosnap_Mongodb.Service.UserService
 
         #region Create
 
-        public async Task FollowUser(string loggedUser, string followingUser)
+        public async Task FollowUser(string loggedUserUsername, string userUsernameToBeFollowed)
         {
-            var followrsCollection = this._mongoDB.GetCollection<Follow>(PhotosnapCollection.Following);
-            
+            var loggedUser = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", loggedUserUsername);
+            var userToBeFollowed = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", userUsernameToBeFollowed);
 
+            if (loggedUser != null && userToBeFollowed != null)
+            {
+                if (loggedUser.FollowingUsers.Contains(userToBeFollowed.UserId))
+                    throw new Exception("User is already following given user.");
+
+                await HelpMethods.PushValueInFieldCollection(this._userCollection, "UserId", loggedUser.UserId, "FollowingUsers", userToBeFollowed.UserId);
+
+                await HelpMethods.PushValueInFieldCollection(this._userCollection, "UserId", userToBeFollowed.UserId, "FollowersOfUser", loggedUser.UserId);
+            }
+            else
+                throw new Exception("User not found");
         }
         
 
-        public async Task LikePhoto(string loggedUser, string photoId)
-        {
-
-        }
+       
 
         #endregion Create
 
@@ -109,17 +116,23 @@ namespace Photosnap_Mongodb.Service.UserService
 
         #region Delete
 
-        public async Task UnfollowUser(string loggedUsername, string usernameForUnfollowing)
+        public async Task UnfollowUser(string loggedUserUsername, string userUsernameForUnfollowing)
         {
+            var loggedUser = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", loggedUserUsername);
+            var userToBeFollowed = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", userUsernameForUnfollowing);
 
+            if (loggedUser != null && userToBeFollowed != null)
+            {
+                if (!loggedUser.FollowingUsers.Contains(userToBeFollowed.UserId))
+                    throw new Exception("User is already unfollowed");
+
+                await HelpMethods.PopValueInFieldCollection(this._userCollection, "UserId", loggedUser.UserId, "FollowingUsers", userToBeFollowed.UserId);
+
+                await HelpMethods.PopValueInFieldCollection(this._userCollection, "UserId", userToBeFollowed.UserId, "FollowersOfUser", loggedUser.UserId);
+            }
+            else
+                throw new Exception("User not found");
         }
-
-
-        public async Task UnlikePhoto(string loggedUser, string photoId)
-        {
-
-        }
-
         #endregion Delete
     }
 }

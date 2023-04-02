@@ -19,7 +19,7 @@ namespace Photosnap_API.Controllers
             _photoService = new PhotoService(db);
         }
 
-        [HttpPut]
+        [HttpPost]
         [Route("PostPhoto")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,7 +37,7 @@ namespace Photosnap_API.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPost]
         [Route("AddComment")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -46,6 +46,42 @@ namespace Photosnap_API.Controllers
             try
             {
                await this._photoService.AddComment(comment);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("LikePhoto/{userUsername}/{photoId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> LikePhoto(string userUsername, string photoId)
+        {
+            try
+            {
+                await this._photoService.LikePhoto(userUsername, photoId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("UnlikePhoto/{userUsername}/{photoId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UnlikePhoto(string userUsername, string photoId)
+        {
+            try
+            {
+                await this._photoService.UnlikePhoto(userUsername, photoId);
                 return Ok();
             }
             catch (Exception ex)

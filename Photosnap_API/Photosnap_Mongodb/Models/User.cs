@@ -32,6 +32,12 @@ namespace Photosnap_Mongodb.Models
 
         public byte[] PasswordSalt { get; set; }
 
+        public List<ObjectId> FollowingUsers { get; set; }
+
+        public List<ObjectId> FollowersOfUser { get; set; }
+
+        public List<ObjectId> UserLikes { get; set; }
+
         public List<MongoDBRef> UserPhotos { get; set; }
 
         public List<PhotoCategory> PhotoCategoriesOfInterest { get; set; }
@@ -42,6 +48,8 @@ namespace Photosnap_Mongodb.Models
 
         public User() 
         {
+            FollowingUsers = new List<ObjectId>();
+            FollowersOfUser = new List<ObjectId>(); 
             PhotoCategoriesOfInterest= new List<PhotoCategory>();
             UserPhotos = new List<MongoDBRef>(); 
             PasswordSalt = new Guid().ToByteArray();

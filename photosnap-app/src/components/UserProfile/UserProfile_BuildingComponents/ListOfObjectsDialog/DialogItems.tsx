@@ -1,5 +1,4 @@
 import { Box, Button, Grid, Typography } from "@mui/material";
-import { display } from "@mui/system";
 import { useEffect, useState } from "react";
 import DialogItemsType from "../../../../Interfaces/UserProfile/DialogProps/DialogItemsEnum";
 import UserItemType from "../../../../Types/UserTypes/UserItemType";
@@ -8,7 +7,6 @@ import CategoryItemType from "../../../../Types/CategoryType/CategoryItemType";
 import CategoryItem from "./Items/CategoryItem";
 import DialogItemsProp from "../../../../Interfaces/UserProfile/DialogProps/IDialogItems";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { type } from "os";
 
 
 
@@ -21,8 +19,6 @@ function DialogItems(props: DialogItemsProp) {
         console.log(props.username);
         console.log(sessionStorage.getItem("username"));
         if (sessionStorage.getItem("username") === props.username) {
-            console.log(props.username);
-            console.log(sessionStorage.getItem("username"));
             setUserWatchSelfProfileFlag(true);
         }
     }, []);
@@ -60,7 +56,7 @@ function DialogItems(props: DialogItemsProp) {
                     {users.map((el, ind) => (
                         <Grid key={"grid" + ind} sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 1 }} >
                             <UserItem username={el.username} profilePhoto={el.profilePhoto} key={"user" + ind} />
-                            {userWatchSelfProfileFlag === true ? <Button size="small" key={ind} sx={{ background: '#FFFFFF', marginLeft:2}}> <DeleteIcon sx={{ color: '#E65664' }} /> </Button> : ""}
+                            {userWatchSelfProfileFlag === true ? <Button size="small" key={ind} sx={{ background: '#FFFFFF', marginLeft: 2 }}> <DeleteIcon sx={{ color: '#E65664' }} /> </Button> : ""}
                         </Grid>
                     ))}
 
@@ -75,9 +71,9 @@ function DialogItems(props: DialogItemsProp) {
                     {categories.map((el, ind) => (
                         <Grid key={"g" + ind} sx={{ marginTop: 1, display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
                             <CategoryItem categoryName={el.categoryName} categoryColor={el.categoryColor} key={"user" + ind} />
-                            {userWatchSelfProfileFlag ? 
-                            <Button key={ind} sx={{ background: '#FFFFFF',  marginLeft:2}}>
-                                 <DeleteIcon sx={{ color: '#E65664', }} />
+                            {userWatchSelfProfileFlag ?
+                                <Button key={ind} sx={{ background: '#FFFFFF', marginLeft: 2 }}>
+                                    <DeleteIcon sx={{ color: '#E65664', }} />
                                 </Button> : ""}
                         </Grid>
                     ))}

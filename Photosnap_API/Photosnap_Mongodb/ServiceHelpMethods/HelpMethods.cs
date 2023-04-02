@@ -29,11 +29,27 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
             return cursor.FirstOrDefault();
         }
 
-        public static async Task UpdateFieldInCollecton<TDocument,TFilterFieldVal,TUpdateFieldValue>(IMongoCollection<TDocument> collection, string filterFieldName, TFilterFieldVal filterFieldValue,
+        public static async Task UpdateFieldInCollecton<TDocument,TFilterFieldVal,TUpdateFieldValue>(IMongoCollection<TDocument> collection, string filterCollectionIdentifierName, TFilterFieldVal filterCollectionIdentifierValue,
                                                                  string updateFieldName, TUpdateFieldValue updateFieldValue)
         {
-            var filter = Builders<TDocument>.Filter.Eq(filterFieldName, filterFieldValue);
+            var filter = Builders<TDocument>.Filter.Eq(filterCollectionIdentifierName, filterCollectionIdentifierValue);
             var update = Builders<TDocument>.Update.Set(updateFieldName, updateFieldValue);
+            await collection.UpdateOneAsync(filter, update);
+        }
+
+        public static async Task PushValueInFieldCollection<TDocument, TFilterFieldVal,TUpdateFieldValue>(IMongoCollection<TDocument> collection, string filterCollectionIdentifierName, TFilterFieldVal filterCollectionIdentifierValue,
+                                                                 string updateListFieldName, TUpdateFieldValue updateFieldValue)
+        {
+            var filter = Builders<TDocument>.Filter.Eq(filterCollectionIdentifierName, filterCollectionIdentifierValue);
+            var update = Builders<TDocument>.Update.Push(updateListFieldName, updateFieldValue);
+            await collection.UpdateOneAsync(filter, update);
+        }
+
+        public static async Task PopValueInFieldCollection<TDocument, TFilterFieldVal, TUpdateFieldValue>(IMongoCollection<TDocument> collection, string filterCollectionIdentifierName, TFilterFieldVal filterCollectionIdentifierValue,
+                                                                string updateListFieldName, TUpdateFieldValue updateFieldValue)
+        {
+            var filter = Builders<TDocument>.Filter.Eq(filterCollectionIdentifierName, filterCollectionIdentifierValue);
+            var update = Builders<TDocument>.Update.Pull(updateListFieldName, updateFieldValue);
             await collection.UpdateOneAsync(filter, update);
         }
 

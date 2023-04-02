@@ -12,7 +12,7 @@ namespace Photosnap_Mongodb.Service
         public static string Photo { get { return "photo"; } }
         public static string PhotoCategory { get { return "photoCategory"; } }
         public static string Following { get { return "following"; } }
-        public static string Likes { get { return "likes"; } }
+        public static string Like { get { return "like"; } }
         public static string Comment { get { return "comments"; } }
     }
 }
