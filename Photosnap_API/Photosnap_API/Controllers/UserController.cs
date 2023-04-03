@@ -81,5 +81,47 @@ namespace Photosnap_API.Controllers
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
+
+        [HttpPut]
+        [Route("AddCategoryOfInterest/{username}/{categoryName}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddCategoryOfInterest(string username, string categoryName)
+        {
+            try
+            {
+                await _userService.AddCategoryOfInterest(username, categoryName);
+                return Ok();
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpPut]
+        [Route("RemoveCategoryOfInterest/{username}/{categoryName}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RemoveCategoryOfInterest(string username, string categoryName)
+        {
+            try
+            {
+                await _userService.RemoveCategoryOfInterest(username, categoryName);
+                return Ok();
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpGet]
+        [Route("GetUserProfilePreview/{username}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetUserProfilePreview(string username)
+        {
+            try
+            {
+                return new JsonResult(await this._userService.GetUserProfilePreview(username));
+
+            }
+            catch(Exception ex) { return BadRequest(ex.Message); }
+        }
     }
 }

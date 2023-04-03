@@ -18,10 +18,10 @@ namespace Photosnap_API.Controllers
         }
 
         [HttpPost]
-        [Route("AddPhotoCategory")]
+        [Route("CreatePhotoCategory")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddPhotoCategory([FromForm]PhotoCategoryDTO photoCategoryDTO)
+        public async Task<IActionResult> CreatePhotoCategory([FromForm]PhotoCategoryDTO photoCategoryDTO)
         {
             try
             {
@@ -39,8 +39,8 @@ namespace Photosnap_API.Controllers
         }
 
         [HttpDelete]
-        [Route("RemovePhotoCategory/{photoCategoryDTO}")]
-        public async Task<IActionResult> RemovePhotoCategory(string photoCategoryDTO)
+        [Route("DeletePhotoCategory/{photoCategoryDTO}")]
+        public async Task<IActionResult> DeletePhotoCategory(string photoCategoryDTO)
         {
             var result = await this._photoCategoryService.RemoveCategory(photoCategoryDTO);
             if (result)

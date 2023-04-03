@@ -48,6 +48,7 @@ namespace Photosnap_Mongodb.Models
 
         public User() 
         {
+            UserLikes = new List<ObjectId>();
             FollowingUsers = new List<ObjectId>();
             FollowersOfUser = new List<ObjectId>(); 
             PhotoCategoriesOfInterest= new List<PhotoCategory>();

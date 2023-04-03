@@ -6,4 +6,5 @@ export type UserInformation = {
     name: string;
     lastname:string;
     biography:string;
+    profilePhoto: string;
 }

@@ -48,13 +48,8 @@ namespace Photosnap_Mongodb.Service.PhotoService
             var photoFilePath = PhotoStoringMethods.WritePhotoToFolder(basicPhoto.Photo, photo.PhotoId.ToString(), Enums.PhotoType.ContentPhoto);
             await HelpMethods.UpdateFieldInCollecton(_photoCollection, "PhotoId", photo.PhotoId, "PhotoFilePath", photoFilePath);
 
-            var photosByCategory = photoCategory.Photos;
-            photosByCategory.Add(new MongoDBRef(PhotosnapCollection.Photo, photo.PhotoId));
-            await HelpMethods.UpdateFieldInCollecton(categoryCollection, "PhotoCategoryId", photoCategory.PhotoCategoryId, "Photos", photosByCategory);
-
-            var userPhotos = author.UserPhotos;
-            userPhotos.Add(new MongoDBRef(PhotosnapCollection.Photo, photo.PhotoId));
-            await HelpMethods.UpdateFieldInCollecton(userCollection, "UserId", author.UserId, "UserPhotos", userPhotos);
+            await HelpMethods.PushValueInFieldCollection(categoryCollection, "PhotoCategoryId", photoCategory.PhotoCategoryId, "Photos", new MongoDBRef(PhotosnapCollection.Photo, photo.PhotoId));
+            await HelpMethods.PushValueInFieldCollection(userCollection, "UserId", author.UserId, "UserPhotos", new MongoDBRef(PhotosnapCollection.Photo, photo.PhotoId));
 
             return true;
         }
@@ -70,6 +65,8 @@ namespace Photosnap_Mongodb.Service.PhotoService
                 comment.AssociatedToPhoto = new MongoDBRef(PhotosnapCollection.Photo, new ObjectId(commentDTO.PhotoId));
                 comment.AuthorOfComment = await HelpMethods.GetDocumentByFieldValue(userCollection, "Username", commentDTO.AuthorOfCommentUsername);
                 _commentService.InsertOne(comment);
+
+                await HelpMethods.PushValueInFieldCollection(this._photoCollection,"PhotoId", new ObjectId(commentDTO.PhotoId), "Comments", comment);
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
@@ -134,7 +131,6 @@ namespace Photosnap_Mongodb.Service.PhotoService
             ObjectId _photoId = new ObjectId(photoId);
             var userCollection = _mongoDB.GetCollection<User>(PhotosnapCollection.User);
             var categoryCollection = _mongoDB.GetCollection<PhotoCategory>(PhotosnapCollection.PhotoCategory);
-            var _commentService = _mongoDB.GetCollection<Comment>(PhotosnapCollection.Comment);
 
             var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId", _photoId);
             var photoCategory = await HelpMethods.GetDocumentByFieldValue(categoryCollection, "CategoryName", photo.Category.CategoryName);
@@ -142,17 +138,11 @@ namespace Photosnap_Mongodb.Service.PhotoService
             if (photo == null || author == null || photoCategory == null)
                 return false;
 
-            var photosByCategory = photoCategory.Photos;
-            photosByCategory = photosByCategory.Where(dbRef => dbRef.Id != _photoId).ToList();
-            await HelpMethods.UpdateFieldInCollecton(categoryCollection, "PhotoCategoryId", photoCategory.PhotoCategoryId, "Photos", photosByCategory);
+            await HelpMethods.PopValueInFieldCollection(categoryCollection, "PhotoCategoryId", photoCategory.PhotoCategoryId, "Photos", new MongoDBRef(PhotosnapCollection.Photo, photo.PhotoId)); 
+            await HelpMethods.PopValueInFieldCollection(userCollection, "UserId", author.UserId, "UserPhotos", new MongoDBRef(PhotosnapCollection.Photo, photo.PhotoId)); 
 
-            var userPhotos = author.UserPhotos;
-            userPhotos = photosByCategory.Where(dbRef => dbRef.Id != _photoId).ToList();
-            await HelpMethods.UpdateFieldInCollecton(userCollection, "UserId", author.UserId, "UserPhotos", userPhotos);
-
-
-            //TODO: remove comments associated to photo
-
+            await HelpMethods.DeleteCommentsOfPhoto(this._mongoDB, photo);
+            await HelpMethods.DeletePhotoLikes(this._mongoDB, photo);
 
             PhotoStoringMethods.DeletePhotoFromFolder(photoId.ToString(), PhotoType.ContentPhoto);
             return await HelpMethods.RemoveDocument(_photoCollection, "PhotoId", _photoId);

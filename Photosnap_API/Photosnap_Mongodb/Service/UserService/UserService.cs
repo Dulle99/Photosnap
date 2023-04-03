@@ -81,7 +81,34 @@ namespace Photosnap_Mongodb.Service.UserService
 
         #endregion RegisterAndLogin
 
-        #region Create
+        #region Get
+
+        public async Task<UserProfilePreviewDTO> GetUserProfilePreview(string username)
+        {
+            var user = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", username);
+            if (user != null)
+            {
+                UserProfilePreviewDTO userPreview = new UserProfilePreviewDTO
+                {
+                    Username = user.Username,
+                    Name = user.Name,
+                    LastName = user.LastName,
+                    numberOfFollowings = user.FollowingUsers.Count(),
+                    NumberOfFollowers = user.FollowersOfUser.Count(),
+                    NumberOfCategoriesOfInterst = user.PhotoCategoriesOfInterest.Count(),
+                    Biography = user.Biography,
+                    ProfilePhoto = PhotoStoringMethods.ReadPhotoFromFile(user.Username, PhotoType.UserProfilePhoto)
+                };
+
+                return userPreview;
+            }
+            else throw new Exception("User not found.");
+        }
+
+
+        #endregion Get
+
+        #region Update
 
         public async Task FollowUser(string loggedUserUsername, string userUsernameToBeFollowed)
         {
@@ -100,21 +127,6 @@ namespace Photosnap_Mongodb.Service.UserService
             else
                 throw new Exception("User not found");
         }
-        
-
-       
-
-        #endregion Create
-
-        #region Get
-
-        #endregion Get
-
-        #region Update
-
-        #endregion Update
-
-        #region Delete
 
         public async Task UnfollowUser(string loggedUserUsername, string userUsernameForUnfollowing)
         {
@@ -133,6 +145,49 @@ namespace Photosnap_Mongodb.Service.UserService
             else
                 throw new Exception("User not found");
         }
+
+        public async Task AddCategoryOfInterest(string userUsername, string categoryName)
+        {
+            var user = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", userUsername);
+
+            var categoryCollection = this._mongoDB.GetCollection<PhotoCategory>(PhotosnapCollection.PhotoCategory);
+            var photoCategory = await HelpMethods.GetDocumentByFieldValue(categoryCollection, "CategoryName", categoryName);
+
+            if (user != null && categoryCollection != null)
+            {
+                if (user.PhotoCategoriesOfInterest.Exists(category => category.PhotoCategoryId == photoCategory.PhotoCategoryId))
+                    throw new Exception("User already have category added to his interests.");
+
+                await HelpMethods.PushValueInFieldCollection(this._userCollection, "UserId", user.UserId, "PhotoCategoriesOfInterest", photoCategory);
+
+            }
+            else
+                throw new Exception("Objects not found.");
+        }
+
+        public async Task RemoveCategoryOfInterest(string userUsername, string categoryName)
+        {
+            var user = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", userUsername);
+
+            var categoryCollection = this._mongoDB.GetCollection<PhotoCategory>(PhotosnapCollection.PhotoCategory);
+            var photoCategory = await HelpMethods.GetDocumentByFieldValue(categoryCollection, "CategoryName", categoryName);
+
+            if (user != null && categoryCollection != null)
+            {
+                if (!user.PhotoCategoriesOfInterest.Exists(category => category.PhotoCategoryId == photoCategory.PhotoCategoryId)) 
+                    throw new Exception("User does not have category added to his interests.");
+
+                await HelpMethods.PopValueInFieldCollection(this._userCollection, "UserId", user.UserId, "PhotoCategoriesOfInterest", photoCategory);
+            }
+            else
+                throw new Exception("Objects not found.");
+        }
+
+        #endregion Update
+
+        #region Delete
+
+        
         #endregion Delete
     }
 }

@@ -10,7 +10,7 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
 {
     public static class PhotoStoringMethods
     {
-        public static string WritePhotoToFolder(IFormFile ImageFile, string photoName, PhotoType photoType )
+        public static string WritePhotoToFolder(IFormFile ImageFile, string photoId, PhotoType photoType )
         {
             byte[] imageBinary = null;
             string folderPath = GetFolderPathByPhotoType(photoType);
@@ -22,18 +22,18 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
                 {
                     imageBinary = binaryReader.ReadBytes((int)ImageFile.Length);
                 }
-                photoFilePath = folderPath + photoName;
+                photoFilePath = folderPath + photoId;
                 File.WriteAllBytes(photoFilePath, imageBinary);
             }
             return photoFilePath;
         }
 
-        public static byte[] ReadPhotoFromFile(string photoName, PhotoType photoType)
+        public static byte[] ReadPhotoFromFile(string photoId, PhotoType photoType)
         {
             try
             {
                 string folderPath = GetFolderPathByPhotoType(photoType);
-                string photoFilePath = folderPath + photoName; //+ ".jpg";
+                string photoFilePath = folderPath + photoId; //+ ".jpg";
                 byte[] photo = File.ReadAllBytes(photoFilePath);
                 if (photo.Length > 0)
                     return photo;
