@@ -149,11 +149,5 @@ namespace Photosnap_Mongodb.Service.PhotoService
         }
 
         #endregion Delete
-
-
-
-
-
-       
     }
 }

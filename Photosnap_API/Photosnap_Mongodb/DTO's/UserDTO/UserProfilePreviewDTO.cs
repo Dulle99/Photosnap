@@ -20,7 +20,7 @@ namespace Photosnap_Mongodb.DTO_s.UserDTO
 
         public string Name { get; set; }
 
-        public string LastName { get; set; }
+        public string Lastname { get; set; }
 
         public string Biography { get; set; }
 

@@ -1,4 +1,6 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using Photosnap_Mongodb.DTO_s.PhotoCategoryDTO;
 using Photosnap_Mongodb.DTO_s.UserDTO;
 using Photosnap_Mongodb.Enums;
 using Photosnap_Mongodb.Models;
@@ -24,7 +26,7 @@ namespace Photosnap_Mongodb.Service.UserService
         }
 
         #region RegisterAndLogin
-        
+
         public async Task<LoginRegisterResponseDTO> CreateUser(UserDTO userBasicInformation)
         {
             try
@@ -92,7 +94,7 @@ namespace Photosnap_Mongodb.Service.UserService
                 {
                     Username = user.Username,
                     Name = user.Name,
-                    LastName = user.LastName,
+                    Lastname = user.LastName,
                     numberOfFollowings = user.FollowingUsers.Count(),
                     NumberOfFollowers = user.FollowersOfUser.Count(),
                     NumberOfCategoriesOfInterst = user.PhotoCategoriesOfInterest.Count(),
@@ -105,6 +107,40 @@ namespace Photosnap_Mongodb.Service.UserService
             else throw new Exception("User not found.");
         }
 
+        public async Task<List<UserChipDTO>> GetUsersListOfFollowing(string username, int numberOfUsersToGet)
+        {  
+            var filteredUserDocument= await HelpMethods.GetSpecificFieldsFromDocument(this._userCollection, "Username", username, new List<string> { "FollowingUsers" });
+            if (filteredUserDocument == null || filteredUserDocument.FollowingUsers == null)
+                throw new Exception("Error while retriving list of followings.");
+
+            return await HelpMethods.GetUsersChipPreviews(this._userCollection, filteredUserDocument.FollowingUsers, numberOfUsersToGet);
+        }
+
+        public async Task<List<UserChipDTO>> GetUsersListOfFollowers(string username, int numberOfUsersToGet)
+        {   
+            var filteredUserDocument = await HelpMethods.GetSpecificFieldsFromDocument(this._userCollection, "Username", username, new List<string> { "FollowersOfUser" });
+            if (filteredUserDocument == null || filteredUserDocument.FollowingUsers == null)
+                throw new Exception("Error while retriving list of followings.");
+
+            return await HelpMethods.GetUsersChipPreviews(this._userCollection, filteredUserDocument.FollowersOfUser, numberOfUsersToGet);
+        }
+
+
+        public async Task<List<PhotoCategoryDTO>> GetUsersListOfPhotoInterests(string username, int numberOfCategoriesToGet)
+        {
+            var filteredUserDocument = await HelpMethods.GetSpecificFieldsFromDocument(this._userCollection, "Username", username, new List<string> { "PhotoCategoriesOfInterest" });
+            if (filteredUserDocument == null || filteredUserDocument.PhotoCategoriesOfInterest == null)
+                throw new Exception("Error while retriving list of followings.");
+
+            var photoCategoryCollection = this._mongoDB.GetCollection<PhotoCategory>(PhotosnapCollection.PhotoCategory);
+            var photoCategoryList = new List<PhotoCategoryDTO>();
+            foreach (var photoCategory in filteredUserDocument.PhotoCategoriesOfInterest.Take(numberOfCategoriesToGet))
+            {
+                //var photoCategory = await HelpMethods.GetDocumentByFieldValue(photoCategoryCollection, "PhotoCategoryId", photoCategoryId);
+                photoCategoryList.Add(new PhotoCategoryDTO { CategoryName = photoCategory.CategoryName, CategoryColor = photoCategory.CategoryColor });
+            }
+            return photoCategoryList;
+        }
 
         #endregion Get
 

@@ -30,11 +30,16 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
 
         public static byte[] ReadPhotoFromFile(string photoId, PhotoType photoType)
         {
-            try
-            {
                 string folderPath = GetFolderPathByPhotoType(photoType);
                 string photoFilePath = folderPath + photoId; //+ ".jpg";
-                byte[] photo = File.ReadAllBytes(photoFilePath);
+                return ReadPhotoFromFilePath(photoFilePath);
+        }
+
+        public static byte[] ReadPhotoFromFilePath(string filePath)
+        {
+            try
+            {
+                byte[] photo = File.ReadAllBytes(filePath);
                 if (photo.Length > 0)
                     return photo;
                 else

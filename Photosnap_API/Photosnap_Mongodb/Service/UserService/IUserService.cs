@@ -1,4 +1,5 @@
-﻿using Photosnap_Mongodb.DTO_s.UserDTO;
+﻿using Photosnap_Mongodb.DTO_s.PhotoCategoryDTO;
+using Photosnap_Mongodb.DTO_s.UserDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,8 @@ namespace Photosnap_Mongodb.Service.UserService
         public Task RemoveCategoryOfInterest(string userUsername, string categoryName);
 
         public Task<UserProfilePreviewDTO> GetUserProfilePreview(string username);
+        public Task<List<UserChipDTO>> GetUsersListOfFollowing(string username, int numberOfUsersToGet);
+        public Task<List<UserChipDTO>> GetUsersListOfFollowers(string username, int numberOfUsersToGet);
+        public Task<List<PhotoCategoryDTO>> GetUsersListOfPhotoInterests(string username, int numberOfUsersToGet);
     }
 }

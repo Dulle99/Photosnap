@@ -123,5 +123,44 @@ namespace Photosnap_API.Controllers
             }
             catch(Exception ex) { return BadRequest(ex.Message); }
         }
+
+        [HttpGet]
+        [Route("GetUserListOfFollwings/{username}/{numberOfUsersToGet}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetUserListOfFollwings(string username, int numberOfUsersToGet)
+        {
+            try
+            {
+                return new JsonResult(await this._userService.GetUsersListOfFollowing(username, numberOfUsersToGet));
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpGet]
+        [Route("GetUserListOfFollwers/{username}/{numberOfUsersToGet}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetUserListOfFollwers(string username, int numberOfUsersToGet)
+        {
+            try
+            {
+                return new JsonResult(await this._userService.GetUsersListOfFollowers(username, numberOfUsersToGet));
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpGet]
+        [Route("GetUserListOfPhotoInterests/{username}/{numberOfUsersToGet}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetUserListOfPhotoInterests(string username, int numberOfUsersToGet)
+        {
+            try
+            {
+                return new JsonResult(await this._userService.GetUsersListOfPhotoInterests(username, numberOfUsersToGet));
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
     }
 }

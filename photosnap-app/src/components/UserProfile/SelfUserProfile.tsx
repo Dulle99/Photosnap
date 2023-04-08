@@ -10,17 +10,16 @@ function SelfUserProfile(){
 
     useEffect(()=>{
         let _username = sessionStorage.getItem("username");
-        if(_username !== null && _username !== undefined)
-            setUsername(_username);   
+        if(_username){
+            setUsername(_username);  }
         else
             navigate(-1); 
     },[]);
-
+    
     return (
     <>
     <Container sx={{ padding:5 }}>
         <UserBasicInformation username={username}/>
-
     </Container>
     
     </>

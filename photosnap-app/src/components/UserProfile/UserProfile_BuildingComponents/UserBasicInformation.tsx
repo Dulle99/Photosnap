@@ -7,53 +7,68 @@ import { UserInformation } from "../../../Types/UserTypes/UserInformation";
 import ListOfCategories from "./ListOfCategories";
 import ListOfFollowersDialog from "./ListOfFollowersDialog";
 import ListOfFollowingsDialog from "./ListOfFollowingsDialog";
+import axios from "axios";
 
 function UserBasicInformation(username: IUsername) {
     const [userInformation, setUserInformation] = useState<UserInformation>();
-    const [renderConfigs, setRenderConfigs]= useState<IListOfUsersDialog[]>([]);
+    const [renderConfigs, setRenderConfigs] = useState<IListOfUsersDialog[]>([]);
+
 
     useEffect(() => {
-        let us: UserInformation = {
-            username: "Petar99", name: "Pera", lastname: "Peric", numberOfCategoriesOfInterst: 3, numberOfFollowers: 55, numberOfFollowings: 36, profilePhoto: "",
-            biography: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-        };
-        setUserInformation(us);
+        const fetchUserInformation = async () => {
+            const url = `https://localhost:7053/api/User/GetUserProfilePreview/${username.username}`;
+            //console.log(url);
 
-        if (us.numberOfFollowers !== undefined && us.numberOfFollowings !== undefined, us.numberOfCategoriesOfInterst !== undefined) {
-            
-            let followers: IListOfUsersDialog = {username: us.username,  numberOfUser: us.numberOfFollowers};
-            let following: IListOfUsersDialog = {username: us.username,  numberOfUser: us.numberOfFollowings};
-            let list : IListOfUsersDialog[] = [];
-            list.push(followers);
-            list.push(following);
-            setRenderConfigs(list);
+            const result = await axios.get<UserInformation>(url , {
+                headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
+            });
+
+            if (result.status === 200) {
+                if (result.data) {
+                    console.log(result.data);
+                    setUserInformation(result.data);
+                }
+            }
+            else { }
+            //else
+            //something went wrong page
         }
-    }, []);
 
-    return (<>
-        <Box sx={{ display: "flex", flexDirection: "row" }}>
-            <Box>
-                <Avatar sx={{ width: 150, height: 150 }} />
-            </Box>
-            <Box sx={{ marginLeft: 2 }}>
-                <Typography variant="h5"> <strong> {userInformation?.username} </strong> </Typography>
-                <Box sx={{ display: "flex", flexDirection: "row" }} >
-                        <Box sx={{margin: 1}}>
-                            <ListOfFollowersDialog username={username.username}  numberOfUser={45} />
-                        </Box>
-                        <Box sx={{margin: 1}}>
-                            <ListOfFollowingsDialog username={username.username}  numberOfUser={56}  />
-                        </Box>
-                        <Box sx={{margin: 1}}>
-                            <ListOfCategories username={username.username}  numberOfCategories={6}  />
-                        </Box>
+
+        if(username.username !== "")
+            fetchUserInformation();
+    }, [username]);
+
+    if (userInformation === undefined) {
+        return <div>Loading...</div>;
+    }
+    else {
+
+        return (<>
+            <Box sx={{ display: "flex", flexDirection: "row" }}>
+                <Box>
+                    <Avatar   sx={{ width: 150, height: 150, }} src={userInformation.profilePhoto ? `data:image/jpeg;base64,${userInformation.profilePhoto}` : ""} />
                 </Box>
-                <Typography>{userInformation?.name + " " + userInformation?.lastname}</Typography>
-                <Typography>{userInformation?.biography}</Typography>
+                <Box sx={{ marginLeft: 2 }}>
+                    <Typography variant="h5"> <strong> {userInformation!.username} </strong> </Typography>
+                    <Box sx={{ display: "flex", flexDirection: "row" }} >
+                        <Box sx={{ margin: 1 }}>
+                            <ListOfFollowersDialog username={userInformation!.username} numberOfUser={userInformation!.numberOfFollowers} />
+                        </Box>
+                        <Box sx={{ margin: 1 }}>
+                            <ListOfFollowingsDialog username={userInformation!.username} numberOfUser={userInformation!.numberOfFollowings} />
+                        </Box>
+                        <Box sx={{ margin: 1 }}>
+                            <ListOfCategories username={userInformation!.username} numberOfCategories={userInformation!.numberOfCategoriesOfInterst} />
+                        </Box>
+                    </Box>
+                    <Typography>{userInformation!.name + " " + userInformation!.lastname}</Typography>
+                    <Typography>{userInformation!.biography}</Typography>
+                </Box>
             </Box>
-        </Box>
 
-    </>);
+        </>);
+    }
 }
 
 export default UserBasicInformation;
