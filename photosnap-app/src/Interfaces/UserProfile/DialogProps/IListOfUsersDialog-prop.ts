@@ -1,5 +1,5 @@
 interface IListOfUsersDialog{
     username:string;
-    numberOfUser: number;
+    numberOfUsers: number;
 }
 export default IListOfUsersDialog;

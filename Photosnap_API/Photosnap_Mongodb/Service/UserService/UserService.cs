@@ -132,13 +132,10 @@ namespace Photosnap_Mongodb.Service.UserService
             if (filteredUserDocument == null || filteredUserDocument.PhotoCategoriesOfInterest == null)
                 throw new Exception("Error while retriving list of followings.");
 
-            var photoCategoryCollection = this._mongoDB.GetCollection<PhotoCategory>(PhotosnapCollection.PhotoCategory);
             var photoCategoryList = new List<PhotoCategoryDTO>();
             foreach (var photoCategory in filteredUserDocument.PhotoCategoriesOfInterest.Take(numberOfCategoriesToGet))
-            {
-                //var photoCategory = await HelpMethods.GetDocumentByFieldValue(photoCategoryCollection, "PhotoCategoryId", photoCategoryId);
                 photoCategoryList.Add(new PhotoCategoryDTO { CategoryName = photoCategory.CategoryName, CategoryColor = photoCategory.CategoryColor });
-            }
+        
             return photoCategoryList;
         }
 

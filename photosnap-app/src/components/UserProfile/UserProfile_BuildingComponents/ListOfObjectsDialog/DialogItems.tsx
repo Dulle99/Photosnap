@@ -7,35 +7,88 @@ import CategoryItemType from "../../../../Types/CategoryType/CategoryItemType";
 import CategoryItem from "./Items/CategoryItem";
 import DialogItemsProp from "../../../../Interfaces/UserProfile/DialogProps/IDialogItems";
 import DeleteIcon from '@mui/icons-material/Delete';
+import axios from "axios";
 
 
 
 function DialogItems(props: DialogItemsProp) {
     const [users, setUsers] = useState<UserItemType[]>([]);
     const [categories, setCategories] = useState<CategoryItemType[]>([]);
+    const [numberOfItemsToGet, setNumberOfItemsToGet] = useState(5);
+    const [allItemsPulledFlag, setAllItemsPulledFlag] = useState(false);
     const [userWatchSelfProfileFlag, setUserWatchSelfProfileFlag] = useState(false);
 
+    const handleLoadMoreButton: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+        loadData();
+    }
+
+    const handleUnfollowUserButton: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+        e.preventDefault();
+        axios.put(`https://localhost:7053/api/User/Unfollow/${props.username}/${e.currentTarget.id}`, undefined, {
+            headers: {
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem("token")
+            },
+        });
+        setUsers(users.filter(u => u.username != e.currentTarget.id));
+    }
+
+    const handleRemovePhotoInterestButton: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+        e.preventDefault();
+        axios.put(`https://localhost:7053/api/User/RemoveCategoryOfInterest/${props.username}/${e.currentTarget.id}`, undefined, {
+            headers: {
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem("token")
+            },
+        });
+        setCategories(categories.filter(c => c.categoryName != e.currentTarget.id));
+    }
+
+    function GetFetchUrl(): string {
+        if (props.itemsType === DialogItemsType.listOfFollowings) {
+            return `https://localhost:7053/api/User/GetUserListOfFollwings/${props.username}/`;
+        }
+        else if (props.itemsType === DialogItemsType.listOfFollowers) {
+            return `https://localhost:7053/api/User/GetUserListOfFollwers/${props.username}/`;
+        }
+        else {
+            return `https://localhost:7053/api/User/GetUserListOfPhotoInterests/${props.username}/`;
+        }
+    }
+
+    const loadData = async () => {
+        if (props.itemsType === DialogItemsType.listOfFollowings) {
+            const result = await fetchItems<UserItemType>();
+            setUsers(result);
+        }
+        else if (props.itemsType === DialogItemsType.listOfFollowers) {
+            const result = await fetchItems<UserItemType>();
+            setUsers(result);
+        }
+        else {
+            const result = await fetchItems<CategoryItemType>();
+            setCategories(result);
+        }
+
+        if (props.totalDialogItems < numberOfItemsToGet)
+            setAllItemsPulledFlag(true); 
+        else
+            setNumberOfItemsToGet(numberOfItemsToGet + 5);
+    }
+
+    const fetchItems = async <T,>(): Promise<T[]> => {
+        const result = await axios.get<T[]>(GetFetchUrl() + numberOfItemsToGet.toString(), {
+            headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
+        });
+        return result.data;
+    }
+
     useEffect(() => {
-        console.log(props.username);
-        console.log(sessionStorage.getItem("username"));
         if (sessionStorage.getItem("username") === props.username) {
             setUserWatchSelfProfileFlag(true);
         }
     }, []);
 
     useEffect(() => {
-        if (props.itemsType === DialogItemsType.listOfFollowers) {
-            let f1: UserItemType[] = [{ username: "Ivan", profilePhoto: "" }, { username: "Aleks", profilePhoto: "" }];
-            setUsers(f1);
-        }
-        else if (props.itemsType === DialogItemsType.listOfFollowings) {
-            let f2: UserItemType[] = [{ username: "Petar", profilePhoto: "" }, { username: "Nenad", profilePhoto: "" }];
-            setUsers(f2);
-        }
-        else if (props.itemsType === DialogItemsType.listOfCategories) {
-            let c: CategoryItemType[] = [{ categoryName: "Nature", categoryColor: "#00C039" }, { categoryName: "Archiceture", categoryColor: "#897682" }];
-            setCategories(c);
-        }
+        loadData();
     }, []);
 
     if (props.itemsType === DialogItemsType.listOfFollowers) {
@@ -45,6 +98,10 @@ function DialogItems(props: DialogItemsProp) {
                     {users.map((el, ind) => (
                         <UserItem username={el.username} profilePhoto={el.profilePhoto} key={ind} />
                     ))}
+                    {allItemsPulledFlag ? "" :
+                        <Button onClick={handleLoadMoreButton} sx={{ background: '#E65664', marginTop: 5, textTransform: 'none' }}>
+                            <Typography color='#FFFFFF'>Load more</Typography>
+                        </Button>}
                 </Box>
             </>
         );
@@ -56,11 +113,18 @@ function DialogItems(props: DialogItemsProp) {
                     {users.map((el, ind) => (
                         <Grid key={"grid" + ind} sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 1 }} >
                             <UserItem username={el.username} profilePhoto={el.profilePhoto} key={"user" + ind} />
-                            {userWatchSelfProfileFlag === true ? <Button size="small" key={ind} sx={{ background: '#FFFFFF', marginLeft: 2 }}> <DeleteIcon sx={{ color: '#E65664' }} /> </Button> : ""}
+                            {userWatchSelfProfileFlag === true ?
+                                <Button onClick={handleUnfollowUserButton} size="small" key={el.username} id={el.username} sx={{ background: '#E65664', marginLeft: 2, textTransform: 'none' }}>
+                                    <Typography variant="body2" color={'#FFFFFF'}>Unfollow</Typography>
+                                </Button> : ""}
                         </Grid>
                     ))}
-
+                    {allItemsPulledFlag ? "" :
+                        <Button onClick={handleLoadMoreButton} sx={{ background: '#E65664', marginTop: 5, textTransform: 'none' }}>
+                            <Typography color='#FFFFFF'>Load more</Typography>
+                        </Button>}
                 </Box>
+
             </>
         );
     }
@@ -72,12 +136,16 @@ function DialogItems(props: DialogItemsProp) {
                         <Grid key={"g" + ind} sx={{ marginTop: 1, display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
                             <CategoryItem categoryName={el.categoryName} categoryColor={el.categoryColor} key={"user" + ind} />
                             {userWatchSelfProfileFlag ?
-                                <Button key={ind} sx={{ background: '#FFFFFF', marginLeft: 2 }}>
+                                <Button onClick={handleRemovePhotoInterestButton} key={el.categoryName} id={el.categoryName} sx={{ background: '#FFFFFF', marginLeft: 2 }}>
                                     <DeleteIcon sx={{ color: '#E65664', }} />
                                 </Button> : ""}
                         </Grid>
                     ))}
 
+                    {allItemsPulledFlag ? "" :
+                        <Button onClick={handleLoadMoreButton} sx={{ background: '#E65664', marginTop: 5, textTransform: 'none' }}>
+                            <Typography color='#FFFFFF'>Load more</Typography>
+                        </Button>}
                 </Box>
             </>
         );

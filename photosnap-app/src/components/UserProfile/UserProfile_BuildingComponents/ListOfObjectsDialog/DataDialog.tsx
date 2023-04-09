@@ -35,7 +35,7 @@ function DataDialog(props: IDataDialogProp){
                         ref={descriptionElementRef}
                         tabIndex={-1}
                     >
-                        <DialogItems username={props.username} itemsType={props.itemsInDialogType} />
+                        <DialogItems username={props.username} itemsType={props.itemsInDialogType} totalDialogItems={props.totalDialogItems}/>
                     </DialogContent>
                 </DialogContent>
                 <DialogActions>

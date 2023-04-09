@@ -19,7 +19,8 @@ function ListOfCategories(props: IListOfCategoriesProp) {
     return (
         <>
             <DialogButton username={props.username} numberOfDataObjects={props.numberOfCategories} dialogButtonName="Categories" handleClickOpen={handleClickOpen} />
-            <DataDialog handleClose={handleClose} dialogTitle="Categories" openDialog={open} itemsInDialogType={DialogItemsType.listOfCategories} username={props.username} />
+            <DataDialog handleClose={handleClose} dialogTitle="Categories" openDialog={open} 
+                        itemsInDialogType={DialogItemsType.listOfCategories} username={props.username} totalDialogItems={props.numberOfCategories} />
         </>);
 }
 

@@ -6,5 +6,6 @@ interface IDataDialogProp{
     dialogTitle: string;
     itemsInDialogType: DialogItemsType;
     username: string;
+    totalDialogItems: number;
 }
 export default IDataDialogProp;

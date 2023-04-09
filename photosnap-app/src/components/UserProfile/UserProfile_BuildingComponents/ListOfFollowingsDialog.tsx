@@ -18,8 +18,9 @@ function ListOfFollowingDialog(props: IListOfUsersDialog) {
     
     return (
     <>
-        <DialogButton username={props.username} numberOfDataObjects={props.numberOfUser} dialogButtonName="Following" handleClickOpen={handleClickOpen} />
-        <DataDialog handleClose={handleClose} dialogTitle="Following" openDialog={open} itemsInDialogType={DialogItemsType.listOfFollowings} username={props.username} />
+        <DialogButton username={props.username} numberOfDataObjects={props.numberOfUsers} dialogButtonName="Following" handleClickOpen={handleClickOpen} />
+        <DataDialog handleClose={handleClose} dialogTitle="Following" openDialog={open} 
+                    itemsInDialogType={DialogItemsType.listOfFollowings} username={props.username} totalDialogItems={props.numberOfUsers} />
     </>);
 }
  

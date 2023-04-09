@@ -17,8 +17,6 @@ function UserBasicInformation(username: IUsername) {
     useEffect(() => {
         const fetchUserInformation = async () => {
             const url = `https://localhost:7053/api/User/GetUserProfilePreview/${username.username}`;
-            //console.log(url);
-
             const result = await axios.get<UserInformation>(url , {
                 headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
             });
@@ -53,10 +51,10 @@ function UserBasicInformation(username: IUsername) {
                     <Typography variant="h5"> <strong> {userInformation!.username} </strong> </Typography>
                     <Box sx={{ display: "flex", flexDirection: "row" }} >
                         <Box sx={{ margin: 1 }}>
-                            <ListOfFollowersDialog username={userInformation!.username} numberOfUser={userInformation!.numberOfFollowers} />
+                            <ListOfFollowersDialog username={userInformation!.username} numberOfUsers={userInformation!.numberOfFollowers} />
                         </Box>
                         <Box sx={{ margin: 1 }}>
-                            <ListOfFollowingsDialog username={userInformation!.username} numberOfUser={userInformation!.numberOfFollowings} />
+                            <ListOfFollowingsDialog username={userInformation!.username} numberOfUsers={userInformation!.numberOfFollowings} />
                         </Box>
                         <Box sx={{ margin: 1 }}>
                             <ListOfCategories username={userInformation!.username} numberOfCategories={userInformation!.numberOfCategoriesOfInterst} />

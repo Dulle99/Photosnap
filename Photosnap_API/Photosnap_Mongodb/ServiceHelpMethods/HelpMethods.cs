@@ -35,8 +35,6 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
                                                                                                        TFilterValueType filterFieldValue, List<string> fieldNames)
         {
             var filter = Builders<TDocument>.Filter.Eq(filterFieldName, filterFieldValue);
-
-            var combinedProjection = Builders<TDocument>.Projection;
             var projectionList = new List<ProjectionDefinition<TDocument>>();
             foreach(var fieldName in fieldNames)
             {
@@ -44,6 +42,7 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
                 projectionList.Add(projection);
             }
 
+            var combinedProjection = Builders<TDocument>.Projection;
             var options = new FindOptions<TDocument> { Projection = combinedProjection.Combine(projectionList) };
             var cursor = await collection.FindAsync(filter, options);
             return cursor.FirstOrDefault();
