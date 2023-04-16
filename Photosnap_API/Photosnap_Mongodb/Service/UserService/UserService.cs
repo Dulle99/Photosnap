@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using Photosnap_Mongodb.DTO_s.PhotoCategoryDTO;
+using Photosnap_Mongodb.DTO_s.PhotoDTO;
 using Photosnap_Mongodb.DTO_s.UserDTO;
 using Photosnap_Mongodb.Enums;
 using Photosnap_Mongodb.Models;
@@ -84,6 +85,43 @@ namespace Photosnap_Mongodb.Service.UserService
         #endregion RegisterAndLogin
 
         #region Get
+
+        public async Task<List<PhotoDTO>> GetUserPhotos(string username, int numberOfPhotosToGet)
+        {
+            var photoList = new List<PhotoDTO>();
+            var user = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", username);
+
+            var photoCollection = this._mongoDB.GetCollection<Photo>(PhotosnapCollection.Photo);
+            foreach (var photoId in user.UserPhotos.Take(numberOfPhotosToGet))
+            {
+                var photo = await HelpMethods.GetDocumentByFieldValue(photoCollection, "PhotoId", photoId.Id);
+                photoList.Add(new PhotoDTO
+                {
+                    PhotoId = photo.PhotoId,
+                    Photo = PhotoStoringMethods.ReadPhotoFromFilePath(photo.PhotoFilePath),
+                    Description = photo.Description,
+                    NumberOfFollowers = user.FollowersOfUser.Count(),
+                    NumberOfLikes = photo.PhotoLikes.Count(),
+                    NumberOfComments = photo.Comments.Count(),
+                    AuthorUsername = user.Username,
+                    AuthorProfilePhoto = PhotoStoringMethods.ReadPhotoFromFilePath(user.ProfilePhotoFilePath),
+                    CategoryName = photo.Category.CategoryName,
+                    CategoryColor = photo.Category.CategoryColor,
+                });
+            }
+            return photoList;
+        }
+
+        public async Task<int> GetTotalNumberOfUserPhotos(string username)
+        {
+            var filteredUser = await HelpMethods.GetSpecificFieldsFromDocument(this._userCollection, "Username", username, new List<string> { "UserPhotos" });
+            if (filteredUser != null)
+            {
+                return filteredUser.UserPhotos.Count;
+            }
+            else
+                return 0;
+        }
 
         public async Task<UserProfilePreviewDTO> GetUserProfilePreview(string username)
         {

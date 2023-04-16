@@ -3,6 +3,7 @@ import { Container } from "@mui/system";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserBasicInformation from "./UserProfile_BuildingComponents/UserBasicInformation";
+import UserPhotosList from "../Photo/PhotoDisplay/UserPhotosList";
 
 function SelfUserProfile(){
     let navigate = useNavigate();
@@ -18,8 +19,11 @@ function SelfUserProfile(){
     
     return (
     <>
-    <Container sx={{ padding:5 }}>
+    <Container sx={{ padding:5, display:"flex", flexDirection:"column" }}>
         <UserBasicInformation username={username}/>
+        <Container>
+            <UserPhotosList username={username} />
+        </Container>
     </Container>
     
     </>

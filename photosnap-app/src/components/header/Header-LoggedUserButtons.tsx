@@ -14,7 +14,7 @@ function HeaderLoggedUserButtons(){
     }, []);
     return (
         <>
-            <Link to='/PostPhotoForm' style={{ textDecoration: 'none' }} >
+            <Link to='/PostPhoto' style={{ textDecoration: 'none' }} >
                 <HeaderButton buttonName='Post photo' />
             </Link>
 
