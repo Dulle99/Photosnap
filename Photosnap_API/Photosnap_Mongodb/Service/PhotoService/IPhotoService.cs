@@ -15,7 +15,11 @@ namespace Photosnap_Mongodb.Service.PhotoService
         public Task AddComment(BasicCommentDTO comment);
         public Task<bool> DeletePhoto(string photoId);
 
+        public Task<PhotoUpdateFromInfromationDTO>GetPhotoUpdateInformation(string photoId);
+
+        public Task EditPhoto(EditPhotoDTO photoDTO);
         public Task LikePhoto(string userUsername, string photoId);
         public Task UnlikePhoto(string userUsername, string photoId);
+       
     }
 }

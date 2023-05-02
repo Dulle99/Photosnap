@@ -2,10 +2,14 @@ import { Alert, AlertTitle, Box, Button, Container, CssBaseline, Grid, TextField
 import { useEffect, useState } from "react";
 import PhotoFormProps from "../../../Interfaces/Photo/IPhotoForm";
 import SelectPhotoCategory from "../../PhotoCategory/SelectPhotoCategory";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import PhotoProp from "../../../Interfaces/Photo/IPhotoProp";
 
 
 function PhotoForm(prop: PhotoFormProps) {
+    const navigate = useNavigate();
+    const { photoId } = useParams();
     const [description, setDescription] = useState("");
     const [selectedPhotoCategories, setSelectedPhotoCategories] = useState<string[]>([]);
     const [formData, setFormData] = useState(new FormData());
@@ -30,8 +34,19 @@ function PhotoForm(prop: PhotoFormProps) {
     }, [selectedPhotoCategories])
 
     useEffect(() => {
-        if (prop.isEditForm)
-            setImageSrc(prop.photoProp.photo);
+        if (prop.isEditForm == true) {
+            const fetchPhotoInformation = async () => {
+                const result = await axios.get<PhotoProp>(`https://localhost:7053/api/Photo/GetPhotoUpdateInformation/${photoId}`, {
+                    headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
+                });
+                setImageSrc(`data:image/jpeg;base64,${result.data.photo}`);
+                setDescription(result.data.description);
+                let category: string[] = [result.data.category];
+                setSelectedPhotoCategories(category);
+            }
+
+            fetchPhotoInformation();
+        }
         else
             setImageSrc('/Placeholders&Icons/placeholder.jpg');
     }, []);
@@ -55,22 +70,29 @@ function PhotoForm(prop: PhotoFormProps) {
         }
     }
 
-    const handlePostPhotoClick: React.MouseEventHandler<HTMLButtonElement> = async (e) => {
+    const handleServerOperationButtonClick: React.MouseEventHandler<HTMLButtonElement> = async (e) => {
         if (!areFieldsEmpty()) {
-            formData.append('photoAuthor', sessionStorage.getItem('username')!);
             formData.append('description', description);
             formData.append('category', selectedPhotoCategories[0]);
 
+            let result: AxiosResponse<any, any>;
             if (prop.isEditForm) {
-                const result = await axios.post(`https://localhost:7053/api/Photo/EditPhoto`, formData, {
+                if (photoId != undefined)
+                    formData.append('photoId', photoId);
+                result = await axios.put(`https://localhost:7053/api/Photo/EditPhoto`, formData, {
                     headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
                 });
             }
             else {
-                const result = await axios.post(`https://localhost:7053/api/Photo/PostPhoto`, formData, {
+
+                formData.append('photoAuthor', sessionStorage.getItem('username')!);
+                result = await axios.post(`https://localhost:7053/api/Photo/PostPhoto`, formData, {
                     headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
                 });
             }
+
+            if (result.status === 200)
+                navigate(-1);
         }
 
     }
@@ -100,7 +122,7 @@ function PhotoForm(prop: PhotoFormProps) {
                                 name={"photoDescription"}
                                 type="text"
                                 multiline={true}
-                                value={prop.isEditForm ? prop.photoProp.description : description}
+                                value={description}
                                 rows={2}
                                 required
                                 fullWidth
@@ -140,6 +162,7 @@ function PhotoForm(prop: PhotoFormProps) {
                     <Box
                         component="img"
                         sx={{
+                            mt: 3, mb: 2,
                             maxHeight: { xs: 433, md: 367 },
                             maxWidth: { xs: 550, md: 450 },
 
@@ -159,7 +182,7 @@ function PhotoForm(prop: PhotoFormProps) {
                 <Box style={{ display: "flex", justifyContent: "center" }}>
                     <Button
                         type="submit"
-                        onClick={handlePostPhotoClick}
+                        onClick={handleServerOperationButtonClick}
                         variant="contained"
                         sx={{
                             mt: 3, mb: 2, textAlign: 'center', background: '#BA1B2A', ':hover': {

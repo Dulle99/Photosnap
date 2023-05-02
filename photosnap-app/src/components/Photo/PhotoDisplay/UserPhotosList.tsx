@@ -40,6 +40,9 @@ function UserPhotosList(prop: IUsername) {
         fetchPhotos();
     }
 
+    function photoDeleted(photoId: string): void{
+        setPhotos(photos.filter(photo => photo.photoId !== photoId));
+    }
 
     useEffect(() => {
         if (prop.username != "") {
@@ -47,13 +50,14 @@ function UserPhotosList(prop: IUsername) {
             fetchPhotos();
         }
     }, [prop])
+
     return (
         <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
             <ImageList sx={{ width: 1000, height: 950, flexWrap: "wrap" }} cols={3} >
                 {photos.map((photo, ind) => (
                     <ImageListItem key={ind} >
                         <PhotoCard photoId={photo.photoId} photo={photo.photo} description={photo.description.slice(0, 40) + "..."}
-                            numberOfFollowers={photo.numberOfFollowers} numberOfLikes={photo.numberOfLikes} numberOfComments={photo.numberOfComments}
+                            numberOfFollowers={photo.numberOfFollowers} numberOfLikes={photo.numberOfLikes} numberOfComments={photo.numberOfComments} photoDeleted={photoDeleted}
                             authorUsername={photo.authorUsername} authorProfilePhoto={photo.authorProfilePhoto} categoryName={photo.categoryName} categoryColor={photo.categoryColor} />
                     </ImageListItem>
                 ))}

@@ -56,6 +56,20 @@ namespace Photosnap_API.Controllers
         }
 
         [HttpPut]
+        [Route("EditPhoto")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> EditPhoto([FromForm] EditPhotoDTO editPhotoDTO)
+        {
+            try
+            {
+                await this._photoService.EditPhoto(editPhotoDTO);
+                return Ok();
+            }
+            catch (Exception ex){ return BadRequest(); }
+        }
+
+        [HttpPut]
         [Route("LikePhoto/{userUsername}/{photoId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -101,6 +115,23 @@ namespace Photosnap_API.Controllers
             {
                 await this._photoService.DeletePhoto(photoId);
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        [Route("GetPhotoUpdateInformation/{photoId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetPhotoUpdateInformation(string photoId)
+        {
+            try
+            {
+                return new JsonResult(await this._photoService.GetPhotoUpdateInformation(photoId));
             }
             catch (Exception ex)
             {

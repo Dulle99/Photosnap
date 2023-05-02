@@ -23,7 +23,7 @@ namespace Photosnap_Mongodb.Service.UserService
         public UserService(IMongoDatabase mongodDatabase)
         {
             _mongoDB = mongodDatabase;
-            _userCollection = _mongoDB.GetCollection<User>(PhotosnapCollection.User);
+            _userCollection = _mongoDB.GetCollection<User>(PhotosnapCollections.User);
         }
 
         #region RegisterAndLogin
@@ -44,7 +44,7 @@ namespace Photosnap_Mongodb.Service.UserService
                 user.Password = PasswordService.EncryptPassword(userBasicInformation.Password, user.PasswordSalt);
                 user.ProfilePhotoFilePath = PhotoStoringMethods.WritePhotoToFolder(userBasicInformation.ProfilePhoto, user.Username, PhotoType.UserProfilePhoto);
 
-                var userCollection = this._mongoDB.GetCollection<User>(PhotosnapCollection.User);
+                var userCollection = this._mongoDB.GetCollection<User>(PhotosnapCollections.User);
                 await userCollection.InsertOneAsync(user);
 
                 LoginRegisterResponseDTO responseDTO = new LoginRegisterResponseDTO();
@@ -91,13 +91,13 @@ namespace Photosnap_Mongodb.Service.UserService
             var photoList = new List<PhotoDTO>();
             var user = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", username);
 
-            var photoCollection = this._mongoDB.GetCollection<Photo>(PhotosnapCollection.Photo);
+            var photoCollection = this._mongoDB.GetCollection<Photo>(PhotosnapCollections.Photo);
             foreach (var photoId in user.UserPhotos.Take(numberOfPhotosToGet))
             {
                 var photo = await HelpMethods.GetDocumentByFieldValue(photoCollection, "PhotoId", photoId.Id);
                 photoList.Add(new PhotoDTO
                 {
-                    PhotoId = photo.PhotoId,
+                    PhotoId = photo.PhotoId.ToString(),
                     Photo = PhotoStoringMethods.ReadPhotoFromFilePath(photo.PhotoFilePath),
                     Description = photo.Description,
                     NumberOfFollowers = user.FollowersOfUser.Count(),
@@ -221,7 +221,7 @@ namespace Photosnap_Mongodb.Service.UserService
         {
             var user = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", userUsername);
 
-            var categoryCollection = this._mongoDB.GetCollection<PhotoCategory>(PhotosnapCollection.PhotoCategory);
+            var categoryCollection = this._mongoDB.GetCollection<PhotoCategory>(PhotosnapCollections.PhotoCategory);
             var photoCategory = await HelpMethods.GetDocumentByFieldValue(categoryCollection, "CategoryName", categoryName);
 
             if (user != null && categoryCollection != null)
@@ -240,7 +240,7 @@ namespace Photosnap_Mongodb.Service.UserService
         {
             var user = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", userUsername);
 
-            var categoryCollection = this._mongoDB.GetCollection<PhotoCategory>(PhotosnapCollection.PhotoCategory);
+            var categoryCollection = this._mongoDB.GetCollection<PhotoCategory>(PhotosnapCollections.PhotoCategory);
             var photoCategory = await HelpMethods.GetDocumentByFieldValue(categoryCollection, "CategoryName", categoryName);
 
             if (user != null && categoryCollection != null)

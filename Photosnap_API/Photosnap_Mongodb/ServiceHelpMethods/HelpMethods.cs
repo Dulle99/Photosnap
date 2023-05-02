@@ -109,7 +109,7 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
 
         public async static Task DeleteCommentsOfPhoto(IMongoDatabase db, Photo photo)
         {
-            var commentCollection = db.GetCollection<Comment>(PhotosnapCollection.Comment);
+            var commentCollection = db.GetCollection<Comment>(PhotosnapCollections.Comment);
             foreach (var comment in photo.Comments)
             {
                 await RemoveDocument(commentCollection, "CommentId", comment.CommentId);
@@ -118,8 +118,8 @@ namespace Photosnap_Mongodb.ServiceHelpMethods
 
         public async static Task DeletePhotoLikes(IMongoDatabase db, Photo photo)
         {
-            var userCollection = db.GetCollection<User>(PhotosnapCollection.User);
-            var likeCollection = db.GetCollection<Like>(PhotosnapCollection.Like);
+            var userCollection = db.GetCollection<User>(PhotosnapCollections.User);
+            var likeCollection = db.GetCollection<Like>(PhotosnapCollections.Like);
             foreach (var likeId in photo.PhotoLikes)
             {
                 var like = await GetDocumentByFieldValue(likeCollection, "LikeId", likeId);

@@ -11,7 +11,7 @@ namespace Photosnap_Mongodb.DTO_s.PhotoDTO
     {
         #region Field(s)
 
-        public ObjectId PhotoId { get; set; }
+        public string PhotoId { get; set; }
 
         public byte[] Photo { get; set; }
 

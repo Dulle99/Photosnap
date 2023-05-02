@@ -18,7 +18,7 @@ namespace Photosnap_Mongodb.Service.PhotoCategoryService
         public PhotoCategoryService(IMongoDatabase mongoDatabase)
         {
             _db = mongoDatabase;
-            _photoCategoriesCollection = _db.GetCollection<PhotoCategory>(PhotosnapCollection.PhotoCategory);
+            _photoCategoriesCollection = _db.GetCollection<PhotoCategory>(PhotosnapCollections.PhotoCategory);
         }
 
 

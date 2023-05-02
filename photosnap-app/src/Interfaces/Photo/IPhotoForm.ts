@@ -1,7 +1,6 @@
 import PhotoProp from "./IPhotoProp";
 
 interface PhotoFormProps{
-    isEditForm: boolean,
-    photoProp: PhotoProp | any
+    isEditForm: boolean
 }
 export default PhotoFormProps;

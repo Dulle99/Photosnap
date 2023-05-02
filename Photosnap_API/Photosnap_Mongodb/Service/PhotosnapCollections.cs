@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Photosnap_Mongodb.Service
 {
-    public class PhotosnapCollection
+    public class PhotosnapCollections
     {
         public static string User { get { return "user"; } }
         public static string Photo { get { return "photo"; } }

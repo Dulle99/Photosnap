@@ -31,12 +31,14 @@ function App() {
       <Routes>
         <Route path='/' element={<Header />}>
           <Route path='homepage' element={<Homepage />} />
-          <Route path='MyProfile' element={<SelfUserProfile/>} />
-          <Route path='PostPhoto' element={<PhotoForm isEditForm={false} photoProp={undefined}  />} />
+          <Route path='MyProfile' element={<SelfUserProfile />} >
+          </Route>
+            <Route path='EditPhoto/:photoId' element={<PhotoForm isEditForm={true} />} />
+          <Route path='PostPhoto' element={<PhotoForm isEditForm={false}  />} />
         </Route>
         <Route path='Login' element={<Login userLogged={userLogged} />} />
         <Route path='Register' element={<Register userLogged={userLogged} />} />
-        
+
       </Routes>
     </>
   );

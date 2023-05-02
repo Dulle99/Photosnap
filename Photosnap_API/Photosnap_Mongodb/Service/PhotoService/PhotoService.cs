@@ -22,7 +22,7 @@ namespace Photosnap_Mongodb.Service.PhotoService
         public PhotoService(IMongoDatabase mongodDatabase) 
         { 
             _mongoDB= mongodDatabase;
-            _photoCollection = _mongoDB.GetCollection<Photo>(PhotosnapCollection.Photo);
+            _photoCollection = _mongoDB.GetCollection<Photo>(PhotosnapCollections.Photo);
         }
 
         #region Create
@@ -30,8 +30,8 @@ namespace Photosnap_Mongodb.Service.PhotoService
         public async Task<bool> CreatePhoto(BasicPhotoDTO basicPhoto)
         {
 
-            var userCollection = _mongoDB.GetCollection<User>(PhotosnapCollection.User);
-            var categoryCollection = _mongoDB.GetCollection<PhotoCategory>(PhotosnapCollection.PhotoCategory);
+            var userCollection = _mongoDB.GetCollection<User>(PhotosnapCollections.User);
+            var categoryCollection = _mongoDB.GetCollection<PhotoCategory>(PhotosnapCollections.PhotoCategory);
 
             var author = await HelpMethods.GetDocumentByFieldValue(userCollection, "Username", basicPhoto.PhotoAuthor);
             var photoCategory = await HelpMethods.GetDocumentByFieldValue(categoryCollection, "CategoryName", basicPhoto.Category);
@@ -48,8 +48,8 @@ namespace Photosnap_Mongodb.Service.PhotoService
             var photoFilePath = PhotoStoringMethods.WritePhotoToFolder(basicPhoto.Photo, photo.PhotoId.ToString(), Enums.PhotoType.ContentPhoto);
             await HelpMethods.UpdateFieldInCollecton(_photoCollection, "PhotoId", photo.PhotoId, "PhotoFilePath", photoFilePath);
 
-            await HelpMethods.PushValueInFieldCollection(categoryCollection, "PhotoCategoryId", photoCategory.PhotoCategoryId, "Photos", new MongoDBRef(PhotosnapCollection.Photo, photo.PhotoId));
-            await HelpMethods.PushValueInFieldCollection(userCollection, "UserId", author.UserId, "UserPhotos", new MongoDBRef(PhotosnapCollection.Photo, photo.PhotoId));
+            await HelpMethods.PushValueInFieldCollection(categoryCollection, "PhotoCategoryId", photoCategory.PhotoCategoryId, "Photos", new MongoDBRef(PhotosnapCollections.Photo, photo.PhotoId));
+            await HelpMethods.PushValueInFieldCollection(userCollection, "UserId", author.UserId, "UserPhotos", new MongoDBRef(PhotosnapCollections.Photo, photo.PhotoId));
 
             return true;
         }
@@ -58,11 +58,11 @@ namespace Photosnap_Mongodb.Service.PhotoService
         {
             try
             {
-                var _commentService = _mongoDB.GetCollection<Comment>(PhotosnapCollection.Comment);
-                var userCollection = _mongoDB.GetCollection<User>(PhotosnapCollection.User);
+                var _commentService = _mongoDB.GetCollection<Comment>(PhotosnapCollections.Comment);
+                var userCollection = _mongoDB.GetCollection<User>(PhotosnapCollections.User);
                 Comment comment = new Comment();
                 comment.CommentContent = commentDTO.CommentContent;
-                comment.AssociatedToPhoto = new MongoDBRef(PhotosnapCollection.Photo, new ObjectId(commentDTO.PhotoId));
+                comment.AssociatedToPhoto = new MongoDBRef(PhotosnapCollections.Photo, new ObjectId(commentDTO.PhotoId));
                 comment.AuthorOfComment = await HelpMethods.GetDocumentByFieldValue(userCollection, "Username", commentDTO.AuthorOfCommentUsername);
                 _commentService.InsertOne(comment);
 
@@ -75,21 +75,59 @@ namespace Photosnap_Mongodb.Service.PhotoService
 
         #region Get
 
+        public async Task<PhotoUpdateFromInfromationDTO> GetPhotoUpdateInformation(string photoId)
+        {
+            ObjectId objectId = new ObjectId(photoId);
+            var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId", objectId);
+            if (photo != null)
+            {
+                return new PhotoUpdateFromInfromationDTO
+                {
+                    PhotoAuthor = photo.AuthorOfThePhoto.Username,
+                    Category = photo.Category.CategoryName,
+                    Description = photo.Description,
+                    Photo = PhotoStoringMethods.ReadPhotoFromFilePath(photo.PhotoFilePath)
+                };
+            }
+            return new PhotoUpdateFromInfromationDTO();
+
+
+        }
 
         #endregion Get
 
         #region Update
 
+        public async Task EditPhoto(EditPhotoDTO photoDTO)
+        {
+            var photoId = new ObjectId(photoDTO.PhotoId);
+            var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId", photoId);
+            if(photo != null) 
+            {
+                await HelpMethods.UpdateFieldInCollecton(this._photoCollection, "PhotoId", photoId, "Description", photoDTO.Description);
+                if(photo.Category.CategoryName != photoDTO.Category)
+                {
+                    var categoryCollection = this._mongoDB.GetCollection<PhotoCategory>(PhotosnapCollections.PhotoCategory);
+                    await HelpMethods.PopValueInFieldCollection(categoryCollection, "PhotoCategoryId", photo.Category.PhotoCategoryId, "Photos", new MongoDBRef(PhotosnapCollections.Photo, photo.PhotoId));
+
+                    var newPhotoCategory = await HelpMethods.GetDocumentByFieldValue(categoryCollection, "CategoryName", photoDTO.Category);
+                    await HelpMethods.UpdateFieldInCollecton(this._photoCollection, "PhotoId", photoId, "Category", newPhotoCategory);
+                    await HelpMethods.PushValueInFieldCollection(categoryCollection, "CategoryName", photoDTO.Category, "Photos", new MongoDBRef(PhotosnapCollections.Photo, photo.PhotoId));
+                }
+            }
+
+        }
+
         public async Task LikePhoto(string userUsername, string photoId)
         {
-            var userCollection = this._mongoDB.GetCollection<User>(PhotosnapCollection.User);
+            var userCollection = this._mongoDB.GetCollection<User>(PhotosnapCollections.User);
             var user = await HelpMethods.GetDocumentByFieldValue(userCollection, "Username", userUsername);
 
             var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId", new ObjectId(photoId)); 
 
             if (user != null && photo != null)
             {
-                var likeCollection = this._mongoDB.GetCollection<Like>(PhotosnapCollection.Like);
+                var likeCollection = this._mongoDB.GetCollection<Like>(PhotosnapCollections.Like);
                 var like = new Like(user.UserId, photo.PhotoId);
                 await likeCollection.InsertOneAsync(like);
 
@@ -103,14 +141,14 @@ namespace Photosnap_Mongodb.Service.PhotoService
 
         public async Task UnlikePhoto(string userUsername, string photoId)
         {
-            var userCollection = this._mongoDB.GetCollection<User>(PhotosnapCollection.User);
+            var userCollection = this._mongoDB.GetCollection<User>(PhotosnapCollections.User);
             var user = await HelpMethods.GetDocumentByFieldValue(userCollection, "Username", userUsername);
 
             var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId",new ObjectId(photoId));
 
             if (user != null && photo != null)
             {
-                var likeCollection = this._mongoDB.GetCollection<Like>(PhotosnapCollection.Like);
+                var likeCollection = this._mongoDB.GetCollection<Like>(PhotosnapCollections.Like);
                 var like = await HelpMethods.GetDocumentByFieldValue(likeCollection, "UserId", user.UserId);
 
                 await HelpMethods.PopValueInFieldCollection(userCollection, "UserId", user.UserId, "UserLikes", like.LikeId);
@@ -129,8 +167,8 @@ namespace Photosnap_Mongodb.Service.PhotoService
         public async Task<bool> DeletePhoto(string photoId)
         {
             ObjectId _photoId = new ObjectId(photoId);
-            var userCollection = _mongoDB.GetCollection<User>(PhotosnapCollection.User);
-            var categoryCollection = _mongoDB.GetCollection<PhotoCategory>(PhotosnapCollection.PhotoCategory);
+            var userCollection = _mongoDB.GetCollection<User>(PhotosnapCollections.User);
+            var categoryCollection = _mongoDB.GetCollection<PhotoCategory>(PhotosnapCollections.PhotoCategory);
 
             var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId", _photoId);
             var photoCategory = await HelpMethods.GetDocumentByFieldValue(categoryCollection, "CategoryName", photo.Category.CategoryName);
@@ -138,8 +176,8 @@ namespace Photosnap_Mongodb.Service.PhotoService
             if (photo == null || author == null || photoCategory == null)
                 return false;
 
-            await HelpMethods.PopValueInFieldCollection(categoryCollection, "PhotoCategoryId", photoCategory.PhotoCategoryId, "Photos", new MongoDBRef(PhotosnapCollection.Photo, photo.PhotoId)); 
-            await HelpMethods.PopValueInFieldCollection(userCollection, "UserId", author.UserId, "UserPhotos", new MongoDBRef(PhotosnapCollection.Photo, photo.PhotoId)); 
+            await HelpMethods.PopValueInFieldCollection(categoryCollection, "PhotoCategoryId", photoCategory.PhotoCategoryId, "Photos", new MongoDBRef(PhotosnapCollections.Photo, photo.PhotoId)); 
+            await HelpMethods.PopValueInFieldCollection(userCollection, "UserId", author.UserId, "UserPhotos", new MongoDBRef(PhotosnapCollections.Photo, photo.PhotoId)); 
 
             await HelpMethods.DeleteCommentsOfPhoto(this._mongoDB, photo);
             await HelpMethods.DeletePhotoLikes(this._mongoDB, photo);
