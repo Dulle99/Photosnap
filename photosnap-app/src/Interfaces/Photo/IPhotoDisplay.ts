@@ -9,6 +9,6 @@ interface PhotoDisplay{
     authorProfilePhoto: string,
     categoryName: string,
     categoryColor: string,
-    photoDeleted(photoId: string): void | any
+    photoDeleted(photoId: string): void | undefined
 }
 export default PhotoDisplay;

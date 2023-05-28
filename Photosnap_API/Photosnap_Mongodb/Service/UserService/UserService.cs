@@ -1,17 +1,10 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using Photosnap_Mongodb.DTO_s.PhotoCategoryDTO;
 using Photosnap_Mongodb.DTO_s.PhotoDTO;
 using Photosnap_Mongodb.DTO_s.UserDTO;
 using Photosnap_Mongodb.Enums;
 using Photosnap_Mongodb.Models;
-using Photosnap_Mongodb.Service.PhotoService;
 using Photosnap_Mongodb.ServiceHelpMethods;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Photosnap_Mongodb.Service.UserService
 {
@@ -112,6 +105,47 @@ namespace Photosnap_Mongodb.Service.UserService
             return photoList;
         }
 
+        public async Task<List<PhotoDTO>> GetPhotosOfFollowingUsers(string username, int numberOfPhotosToGet)
+        {
+            var user = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", username);
+            var listOfFollowingUsers = new List<User>();
+            listOfFollowingUsers.Add(user);
+            foreach (var userId in user.FollowingUsers)
+            {
+                listOfFollowingUsers.Add(await HelpMethods.GetDocumentByFieldValue(this._userCollection, "UserId", userId));
+            }
+
+            var photoCollection = this._mongoDB.GetCollection<Photo>(PhotosnapCollections.Photo);
+            var photos = new List<Photo>();
+
+            foreach (var followingUser in listOfFollowingUsers)
+            {
+                var followingUser_LatestPhotos = followingUser.UserPhotos.Take(5);
+                foreach (var photoId in followingUser_LatestPhotos)
+                    photos.Add(await HelpMethods.GetDocumentByFieldValue(photoCollection, "PhotoId", photoId.Id));
+            }
+            photos = photos.OrderByDescending(photo => photo.PublicationDate).ToList();
+
+            var photosDTO = new List<PhotoDTO>();
+            foreach(var photo in photos.Take(numberOfPhotosToGet))
+            {
+                photosDTO.Add(new PhotoDTO
+                {
+                    PhotoId = photo.PhotoId.ToString(),
+                    Photo = PhotoStoringMethods.ReadPhotoFromFilePath(photo.PhotoFilePath),
+                    Description = photo.Description,
+                    NumberOfFollowers = photo.AuthorOfThePhoto.FollowersOfUser.Count(),
+                    NumberOfLikes = photo.PhotoLikes.Count(),
+                    NumberOfComments = photo.Comments.Count(),
+                    AuthorUsername = photo.AuthorOfThePhoto.Username,
+                    AuthorProfilePhoto = PhotoStoringMethods.ReadPhotoFromFilePath(photo.AuthorOfThePhoto.ProfilePhotoFilePath),
+                    CategoryName = photo.Category.CategoryName,
+                    CategoryColor = photo.Category.CategoryColor,
+                });
+            }
+            return photosDTO;
+        }
+
         public async Task<int> GetTotalNumberOfUserPhotos(string username)
         {
             var filteredUser = await HelpMethods.GetSpecificFieldsFromDocument(this._userCollection, "Username", username, new List<string> { "UserPhotos" });
@@ -146,8 +180,8 @@ namespace Photosnap_Mongodb.Service.UserService
         }
 
         public async Task<List<UserChipDTO>> GetUsersListOfFollowing(string username, int numberOfUsersToGet)
-        {  
-            var filteredUserDocument= await HelpMethods.GetSpecificFieldsFromDocument(this._userCollection, "Username", username, new List<string> { "FollowingUsers" });
+        {
+            var filteredUserDocument = await HelpMethods.GetSpecificFieldsFromDocument(this._userCollection, "Username", username, new List<string> { "FollowingUsers" });
             if (filteredUserDocument == null || filteredUserDocument.FollowingUsers == null)
                 throw new Exception("Error while retriving list of followings.");
 
@@ -155,7 +189,7 @@ namespace Photosnap_Mongodb.Service.UserService
         }
 
         public async Task<List<UserChipDTO>> GetUsersListOfFollowers(string username, int numberOfUsersToGet)
-        {   
+        {
             var filteredUserDocument = await HelpMethods.GetSpecificFieldsFromDocument(this._userCollection, "Username", username, new List<string> { "FollowersOfUser" });
             if (filteredUserDocument == null || filteredUserDocument.FollowingUsers == null)
                 throw new Exception("Error while retriving list of followings.");
@@ -173,7 +207,7 @@ namespace Photosnap_Mongodb.Service.UserService
             var photoCategoryList = new List<PhotoCategoryDTO>();
             foreach (var photoCategory in filteredUserDocument.PhotoCategoriesOfInterest.Take(numberOfCategoriesToGet))
                 photoCategoryList.Add(new PhotoCategoryDTO { CategoryName = photoCategory.CategoryName, CategoryColor = photoCategory.CategoryColor });
-        
+
             return photoCategoryList;
         }
 
@@ -245,7 +279,7 @@ namespace Photosnap_Mongodb.Service.UserService
 
             if (user != null && categoryCollection != null)
             {
-                if (!user.PhotoCategoriesOfInterest.Exists(category => category.PhotoCategoryId == photoCategory.PhotoCategoryId)) 
+                if (!user.PhotoCategoriesOfInterest.Exists(category => category.PhotoCategoryId == photoCategory.PhotoCategoryId))
                     throw new Exception("User does not have category added to his interests.");
 
                 await HelpMethods.PopValueInFieldCollection(this._userCollection, "UserId", user.UserId, "PhotoCategoriesOfInterest", photoCategory);
@@ -258,7 +292,7 @@ namespace Photosnap_Mongodb.Service.UserService
 
         #region Delete
 
-        
+
         #endregion Delete
     }
 }

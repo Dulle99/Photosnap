@@ -49,8 +49,9 @@ function Header() {
                                 {"Photosnap"}
                             </Typography>
                         </Box>
-
                     </Link>
+
+                    
                 </Container>
                 <Box sx={{ flexGrow: 1, display: { xs: 'flex', justifyContent: "right" } }}>
                     {isUserLogged == true ? <HeaderLoggedUserButtons /> : <HeaderNonLoggedUserButtons />}

@@ -16,6 +16,7 @@ namespace Photosnap_Mongodb.Service.PhotoService
         public Task<bool> DeletePhoto(string photoId);
 
         public Task<PhotoUpdateFromInfromationDTO>GetPhotoUpdateInformation(string photoId);
+        public Task<List<PhotoDTO>> GetPhotosByCategories(string[] categoriesName, int numberOfPhotosToGet);
 
         public Task EditPhoto(EditPhotoDTO photoDTO);
         public Task LikePhoto(string userUsername, string photoId);

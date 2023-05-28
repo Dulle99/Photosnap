@@ -5,6 +5,7 @@ using Photosnap_Mongodb.DTO_s.PhotoDTO;
 using Photosnap_Mongodb.Enums;
 using Photosnap_Mongodb.Models;
 using Photosnap_Mongodb.ServiceHelpMethods;
+using Photosnap_Mongodb.Service.PhotoCategoryService;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -92,6 +93,54 @@ namespace Photosnap_Mongodb.Service.PhotoService
             return new PhotoUpdateFromInfromationDTO();
 
 
+        }
+
+        public async Task<List<PhotoDTO>> GetPhotosByCategories(string[] categoriesName, int numberOfPhotosToGet)
+        {
+            if(categoriesName.Length == 0)
+            {
+                IPhotoCategoryService photoCategoryService = new PhotoCategoryService.PhotoCategoryService(_mongoDB);
+                var allPhotoCategories = await photoCategoryService.GetPhotoCategories();
+                categoriesName = new string[allPhotoCategories.Count];
+                int indexCounter = 0;
+                foreach(var category in allPhotoCategories) 
+                {
+                    categoriesName[indexCounter++] = category.CategoryName;
+                }
+            }
+
+            int numberOfPhotosToGetOfEachCategory = numberOfPhotosToGet / categoriesName.Length;
+            var categoryCollection = _mongoDB.GetCollection<PhotoCategory>(PhotosnapCollections.PhotoCategory);
+            List<MongoDBRef> photoRefs = new List<MongoDBRef>();
+            foreach(var categoryName in categoriesName) 
+            {
+                var category = await HelpMethods.GetDocumentByFieldValue(categoryCollection, "CategoryName", categoryName);
+                if (category != null) 
+                {
+                    foreach (var photoId in category.Photos.Take(numberOfPhotosToGetOfEachCategory))
+                        photoRefs.Add(photoId);
+                }
+            }
+
+            List<PhotoDTO> photosDTO = new List<PhotoDTO>();
+            foreach(var photoRef in photoRefs)
+            {
+                var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId", photoRef.Id);
+                photosDTO.Add(new PhotoDTO
+                {
+                    PhotoId = photo.PhotoId.ToString(),
+                    Photo = PhotoStoringMethods.ReadPhotoFromFilePath(photo.PhotoFilePath),
+                    Description = photo.Description,
+                    NumberOfFollowers = photo.AuthorOfThePhoto.FollowersOfUser.Count(),
+                    NumberOfLikes = photo.PhotoLikes.Count(),
+                    NumberOfComments = photo.Comments.Count(),
+                    AuthorUsername = photo.AuthorOfThePhoto.Username,
+                    AuthorProfilePhoto = PhotoStoringMethods.ReadPhotoFromFilePath(photo.AuthorOfThePhoto.ProfilePhotoFilePath),
+                    CategoryName = photo.Category.CategoryName,
+                    CategoryColor = photo.Category.CategoryColor,
+                });
+            }
+            return photosDTO;
         }
 
         #endregion Get

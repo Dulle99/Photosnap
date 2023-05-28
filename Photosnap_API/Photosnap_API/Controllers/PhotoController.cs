@@ -140,5 +140,22 @@ namespace Photosnap_API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetPhotoByCategories/{numberOfPhotosToGet}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetPhotoByCategories([FromQuery] string[] categories, int numberOfPhotosToGet)
+        {
+            try
+            {
+               return new JsonResult(await this._photoService.GetPhotosByCategories(categories, numberOfPhotosToGet));
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest();
+            }
+        }
+
     }
 }

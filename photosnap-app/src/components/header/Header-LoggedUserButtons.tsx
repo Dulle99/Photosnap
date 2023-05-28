@@ -14,6 +14,10 @@ function HeaderLoggedUserButtons(){
     }, []);
     return (
         <>
+            <Link to='/ExplorePhotosnap' style={{ textDecoration: 'none' }} >
+                <HeaderButton buttonName='Explore Photosnap' />
+            </Link>
+
             <Link to='/PostPhoto' style={{ textDecoration: 'none' }} >
                 <HeaderButton buttonName='Post photo' />
             </Link>

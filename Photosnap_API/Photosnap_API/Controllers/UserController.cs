@@ -125,6 +125,20 @@ namespace Photosnap_API.Controllers
         }
 
         [HttpGet]
+        [Route("GetPhotosOfFollowingUsers/{username}/{numberOfPhotosToGet}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetPhotosOfFollowingUsers(string username, int numberOfPhotosToGet)
+        {
+            try
+            {
+                return new JsonResult(await this._userService.GetPhotosOfFollowingUsers(username, numberOfPhotosToGet));
+
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpGet]
         [Route("GetTotalNumberOfUserPhotos/{username}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

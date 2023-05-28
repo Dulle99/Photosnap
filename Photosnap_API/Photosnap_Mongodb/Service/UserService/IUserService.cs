@@ -20,10 +20,12 @@ namespace Photosnap_Mongodb.Service.UserService
         public Task RemoveCategoryOfInterest(string userUsername, string categoryName);
 
         public Task<List<PhotoDTO>> GetUserPhotos(string username, int numberOfPhotosToGet);
+        public Task<List<PhotoDTO>> GetPhotosOfFollowingUsers(string username, int numberOfPhotosToGet);
         public Task<int> GetTotalNumberOfUserPhotos(string username);
         public Task<UserProfilePreviewDTO> GetUserProfilePreview(string username);
         public Task<List<UserChipDTO>> GetUsersListOfFollowing(string username, int numberOfUsersToGet);
         public Task<List<UserChipDTO>> GetUsersListOfFollowers(string username, int numberOfUsersToGet);
         public Task<List<PhotoCategoryDTO>> GetUsersListOfPhotoInterests(string username, int numberOfUsersToGet);
+        
     }
 }
