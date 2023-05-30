@@ -143,6 +143,24 @@ namespace Photosnap_Mongodb.Service.PhotoService
             return photosDTO;
         }
 
+        public async Task<List<CommentPreviewDTO>> GetPhotoComments(string photoId, int numberOfCommentsToGet)
+        {
+            var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId", new ObjectId(photoId));
+            var commentsDTO = new List<CommentPreviewDTO>();
+            photo.Comments.OrderByDescending(comment => comment.PublicationDate);
+            foreach(var comment in photo.Comments.Take(numberOfCommentsToGet))
+            {
+                commentsDTO.Add(new CommentPreviewDTO
+                {
+                    AuthorOfCommentUsername = comment.AuthorOfComment.Username,
+                    AuthorOfCommentProfilePhoto = PhotoStoringMethods.ReadPhotoFromFilePath(comment.AuthorOfComment.ProfilePhotoFilePath),
+                    CommentContent = comment.CommentContent,
+                    CommentId = comment.CommentId.ToString(),
+                });
+            }
+            return commentsDTO;
+        }
+
         #endregion Get
 
         #region Update
@@ -167,12 +185,15 @@ namespace Photosnap_Mongodb.Service.PhotoService
 
         }
 
-        public async Task LikePhoto(string userUsername, string photoId)
+        public async Task<int> LikePhotoButton(string userUsername, string photoId)
         {
             var userCollection = this._mongoDB.GetCollection<User>(PhotosnapCollections.User);
             var user = await HelpMethods.GetDocumentByFieldValue(userCollection, "Username", userUsername);
+            var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId", new ObjectId(photoId));
 
-            var photo = await HelpMethods.GetDocumentByFieldValue(this._photoCollection, "PhotoId", new ObjectId(photoId)); 
+            var intersection = user.UserLikes.Intersect(photo.PhotoLikes);
+            if (intersection.Count() == 1)
+                return await this.UnlikePhoto(userUsername, photoId);
 
             if (user != null && photo != null)
             {
@@ -182,13 +203,15 @@ namespace Photosnap_Mongodb.Service.PhotoService
 
                 await HelpMethods.PushValueInFieldCollection(userCollection, "UserId", user.UserId, "UserLikes", like.LikeId);
                 await HelpMethods.PushValueInFieldCollection(this._photoCollection, "PhotoId", photo.PhotoId, "PhotoLikes", like.LikeId);
+
+                return photo.PhotoLikes.Count + 1;
             }
             else
                 throw new Exception("Objects not found");
         }
 
 
-        public async Task UnlikePhoto(string userUsername, string photoId)
+        public async Task<int> UnlikePhoto(string userUsername, string photoId)
         {
             var userCollection = this._mongoDB.GetCollection<User>(PhotosnapCollections.User);
             var user = await HelpMethods.GetDocumentByFieldValue(userCollection, "Username", userUsername);
@@ -202,8 +225,9 @@ namespace Photosnap_Mongodb.Service.PhotoService
 
                 await HelpMethods.PopValueInFieldCollection(userCollection, "UserId", user.UserId, "UserLikes", like.LikeId);
                 await HelpMethods.PopValueInFieldCollection(this._photoCollection, "PhotoId", photo.PhotoId, "PhotoLikes", like.LikeId);
-
                 await HelpMethods.RemoveDocument(likeCollection, "LikeId", like.LikeId);
+
+                return photo.PhotoLikes.Count - 1;
             }
             else
                 throw new Exception("Objects not found");

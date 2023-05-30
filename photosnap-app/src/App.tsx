@@ -15,11 +15,13 @@ function App() {
 
   function userLogged() {
     setToken(sessionStorage.getItem('token'));
+    navigate('/homepage', {replace: true});
   }
 
   useEffect(() => {
+    let path = sessionStorage.getItem('token') == null ? "/ExplorePhotosnap" : "/homepage"; 
     if (window.location.pathname === '/') {
-      navigate("/homepage", { replace: true });
+      navigate(path, { replace: true });
     }
   }, []);
 

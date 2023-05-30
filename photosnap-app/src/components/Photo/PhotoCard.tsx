@@ -16,6 +16,7 @@ import { Link, Navigate, Outlet, useNavigate, useNavigation } from 'react-router
 import PhotoFormProps from '../../Interfaces/Photo/IPhotoForm';
 import YesNoDialog from '../Dialogs/YesNoDialog';
 import axios from 'axios';
+import CommentsDialog from '../Dialogs/CommentsDialog';
 
 
 
@@ -24,22 +25,45 @@ export default function PhotoCard(prop: PhotoDisplay) {
     const [deleteButtonClicked, setDeleteButtonClicked] = useState(false);
     const [loggedUsername, setLoggedUsername] = useState("");
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [numberOfPhotoLikes, setNumberOfPhotosToGet] = useState(prop.numberOfLikes);
+    const [showCommentsFlag, setShowCommentsFlag] = useState(false);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
 
-    async function deletePhoto(flag: Boolean){
-        if(flag === true){
+    function closeDialog(){
+        setShowCommentsFlag(false);
+    }
+    async function deletePhoto(flag: Boolean) {
+        if (flag === true) {
             console.log("delete");
             const result = await axios.delete(`https://localhost:7053/api/Photo/DeletePhoto/${prop.photoId}`, {
                 headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
             });
 
-            if(result.status === 200)
+            if (result.status === 200)
                 prop.photoDeleted(prop.photoId);
         }
         setDeleteButtonClicked(false);
+    }
+
+    const likeButtonClicked: React.MouseEventHandler<HTMLButtonElement> = async () => {
+        let username = sessionStorage.getItem('username'); 
+        if (username !== null) {
+            const result = await axios.put<number>(`https://localhost:7053/api/Photo/LikePhotoButton/${username}/${prop.photoId}`, {
+                headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
+            });
+
+            if (result.status === 200)
+                setNumberOfPhotosToGet(result.data);
+        }
+    }
+
+    const commentsButtonClicked: React.MouseEventHandler<HTMLButtonElement> = () => {
+        let userLogged = window.sessionStorage.getItem('token') !== null ? true : false;
+        if(userLogged)
+            setShowCommentsFlag(true);
     }
 
     const handleClose: React.MouseEventHandler<HTMLLIElement> = (e) => {
@@ -47,7 +71,7 @@ export default function PhotoCard(prop: PhotoDisplay) {
         if (e.currentTarget.id === "Edit") {
             nav(`/EditPhoto/${prop.photoId}`);
         }
-        else if(e.currentTarget.id === "Delete"){
+        else if (e.currentTarget.id === "Delete") {
             setDeleteButtonClicked(true);
         }
 
@@ -66,7 +90,8 @@ export default function PhotoCard(prop: PhotoDisplay) {
 
     return (
         <>
-        {deleteButtonClicked === true ? <YesNoDialog deletePhoto={deletePhoto} dialogText='Are you sure you want to delete the photo?'/> : ""}
+            {deleteButtonClicked === true ? <YesNoDialog deletePhoto={deletePhoto} dialogText='Are you sure you want to delete the photo?' /> : ""}
+            {showCommentsFlag === true? <CommentsDialog photoId={prop.photoId} openDialog={showCommentsFlag} closeDialog={closeDialog} /> : ""}
             <Card  >
                 <CardHeader
                     avatar={
@@ -125,11 +150,11 @@ export default function PhotoCard(prop: PhotoDisplay) {
                     </Typography>
                     <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", mt: 2 }}>
                         <Box>
-                            <IconButton aria-label="like">
+                            <IconButton onClick={likeButtonClicked} aria-label="like">
                                 <ThumbUpIcon />
-                                <Typography>{prop.numberOfLikes}</Typography>
+                                <Typography>{numberOfPhotoLikes}</Typography>
                             </IconButton>
-                            <IconButton aria-label="comments">
+                            <IconButton onClick={commentsButtonClicked} aria-label="comments">
                                 <CommentIcon />
                                 <Typography>{prop.numberOfComments}</Typography>
                             </IconButton>

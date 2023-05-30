@@ -6,13 +6,15 @@ import HeaderNonLoggedUserButtons from "./Header-NonLoggedUserButtons";
 
 function Header() {
     const [isUserLogged, setIsUserLogged] = useState(false);
-
+    const [path, setPath] = useState("ExplorePhotosnap");
     useEffect(() => {
         const token = sessionStorage.getItem('token');
         if (token == null || token.length == 0)
             setIsUserLogged(false);
-        else
+        else{
+            setPath("homepage")
             setIsUserLogged(true);
+        }
     }, [])
 
     return (
@@ -36,7 +38,7 @@ function Header() {
 
                     }}
                 >
-                    <Link to='homepage' style={{ textDecoration: 'none' }}>
+                    <Link to={path} style={{ textDecoration: 'none' }}>
                         <Box sx={{ display: "flex" }} >
 
                             <Typography
@@ -51,7 +53,7 @@ function Header() {
                         </Box>
                     </Link>
 
-                    
+
                 </Container>
                 <Box sx={{ flexGrow: 1, display: { xs: 'flex', justifyContent: "right" } }}>
                     {isUserLogged == true ? <HeaderLoggedUserButtons /> : <HeaderNonLoggedUserButtons />}

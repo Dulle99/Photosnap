@@ -41,7 +41,6 @@ function Login(prop: IUserLoggedStatusChange) {
                         window.sessionStorage.setItem("isUserLogged", "true");
 
                         setIsLoginSuccesful(true);
-                        navigate(-1);
                         prop.userLogged();
                     }
                 })

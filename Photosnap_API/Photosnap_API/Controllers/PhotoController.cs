@@ -70,32 +70,14 @@ namespace Photosnap_API.Controllers
         }
 
         [HttpPut]
-        [Route("LikePhoto/{userUsername}/{photoId}")]
+        [Route("LikePhotoButton/{userUsername}/{photoId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> LikePhoto(string userUsername, string photoId)
+        public async Task<IActionResult> LikePhotoButton(string userUsername, string photoId)
         {
             try
             {
-                await this._photoService.LikePhoto(userUsername, photoId);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPut]
-        [Route("UnlikePhoto/{userUsername}/{photoId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UnlikePhoto(string userUsername, string photoId)
-        {
-            try
-            {
-                await this._photoService.UnlikePhoto(userUsername, photoId);
+                await this._photoService.LikePhotoButton(userUsername, photoId);
                 return Ok();
             }
             catch (Exception ex)
@@ -149,6 +131,23 @@ namespace Photosnap_API.Controllers
             try
             {
                return new JsonResult(await this._photoService.GetPhotosByCategories(categories, numberOfPhotosToGet));
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        [Route("GetPhotoComments/{photoId}/{numberOfCommentsToGet}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetPhotoComments(string photoId, int numberOfCommentsToGet)
+        {
+            try
+            {
+                return new JsonResult(await this._photoService.GetPhotoComments(photoId, numberOfCommentsToGet));
             }
             catch (Exception ex)
             {

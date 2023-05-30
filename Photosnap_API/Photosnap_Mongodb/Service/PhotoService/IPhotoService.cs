@@ -17,10 +17,11 @@ namespace Photosnap_Mongodb.Service.PhotoService
 
         public Task<PhotoUpdateFromInfromationDTO>GetPhotoUpdateInformation(string photoId);
         public Task<List<PhotoDTO>> GetPhotosByCategories(string[] categoriesName, int numberOfPhotosToGet);
+        public Task<List<CommentPreviewDTO>> GetPhotoComments(string photoId, int numberOfCommentsToGet);
 
         public Task EditPhoto(EditPhotoDTO photoDTO);
-        public Task LikePhoto(string userUsername, string photoId);
-        public Task UnlikePhoto(string userUsername, string photoId);
+        public Task<int> LikePhotoButton(string userUsername, string photoId);
+        public Task<int> UnlikePhoto(string userUsername, string photoId);
        
     }
 }
