@@ -8,6 +8,7 @@ import Register from './components/Register/Register';
 import SelfUserProfile from './components/UserProfile/SelfUserProfile';
 import PhotoForm from './components/Photo/Form/PhotoForm';
 import ExplorePhotos from './components/Homepage/ExplorePhotos';
+import UserProfile from './components/UserProfile/UserProfile';
 
 function App() {
   let navigate = useNavigate();
@@ -36,8 +37,8 @@ function App() {
           <Route path='homepage' element={<Homepage />} />
           <Route path='ExplorePhotosnap' element={<ExplorePhotos/>} />
           <Route path='MyProfile' element={<SelfUserProfile />} >
-            
           </Route>
+          <Route path='UserProfile' element={<UserProfile />}/>
             <Route path='EditPhoto/:photoId' element={<PhotoForm isEditForm={true} />} />
           <Route path='PostPhoto' element={<PhotoForm isEditForm={false}  />} />
         </Route>

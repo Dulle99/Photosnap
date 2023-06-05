@@ -79,6 +79,17 @@ namespace Photosnap_Mongodb.Service.UserService
 
         #region Get
 
+        public async Task<bool> IsUserFollowed(string loggedUserUsername, string username)
+        {
+            var loggedUser = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", loggedUserUsername);
+            var user = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", username);
+
+            if(loggedUser == null || user == null) { return false; }
+
+            var result = loggedUser.FollowingUsers.Contains(user.UserId);
+            return result;
+        }
+
         public async Task<List<PhotoDTO>> GetUserPhotos(string username, int numberOfPhotosToGet)
         {
             var photoList = new List<PhotoDTO>();
@@ -102,6 +113,35 @@ namespace Photosnap_Mongodb.Service.UserService
                     CategoryColor = photo.Category.CategoryColor,
                 });
             }
+            return photoList;
+        }
+
+        public async Task<List<PhotoDTO>> GetUserLikedPhotos(string username, int numberOfPhotosToGet)
+        {
+            var user = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", username);
+            var likesCollection = this._mongoDB.GetCollection<Like>(PhotosnapCollections.Like);
+            var photoCollection = this._mongoDB.GetCollection<Photo>(PhotosnapCollections.Photo);
+
+            var photoList = new List<PhotoDTO>();
+            foreach(var like_id in user.UserLikes) 
+            {
+                var like = await HelpMethods.GetDocumentByFieldValue(likesCollection, "LikeId", like_id);
+                var photo = await HelpMethods.GetDocumentByFieldValue(photoCollection, "PhotoId", like.PhotoId);
+                photoList.Add(new PhotoDTO
+                {
+                    PhotoId = photo.PhotoId.ToString(),
+                    Photo = PhotoStoringMethods.ReadPhotoFromFilePath(photo.PhotoFilePath),
+                    Description = photo.Description,
+                    NumberOfFollowers = photo.AuthorOfThePhoto.FollowersOfUser.Count(),
+                    NumberOfLikes = photo.PhotoLikes.Count(),
+                    NumberOfComments = photo.Comments.Count(),
+                    AuthorUsername = photo.AuthorOfThePhoto.Username,
+                    AuthorProfilePhoto = PhotoStoringMethods.ReadPhotoFromFilePath(photo.AuthorOfThePhoto.ProfilePhotoFilePath),
+                    CategoryName = photo.Category.CategoryName,
+                    CategoryColor = photo.Category.CategoryColor,
+                });
+            }
+
             return photoList;
         }
 
@@ -152,6 +192,17 @@ namespace Photosnap_Mongodb.Service.UserService
             if (filteredUser != null)
             {
                 return filteredUser.UserPhotos.Count;
+            }
+            else
+                return 0;
+        }
+
+        public async Task<int> GetTotalNumberOfUserLikedPhotos(string username)
+        {
+            var filteredUser = await HelpMethods.GetSpecificFieldsFromDocument(this._userCollection, "Username", username, new List<string> { "UserLikes" });
+            if (filteredUser != null)
+            {
+                return filteredUser.UserLikes.Count;
             }
             else
                 return 0;

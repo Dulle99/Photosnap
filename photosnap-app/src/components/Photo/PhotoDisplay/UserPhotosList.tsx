@@ -7,28 +7,40 @@ import PhotoDisplay from '../../../Interfaces/Photo/IPhotoDisplay';
 import PhotoCard from '../PhotoCard';
 import axios from 'axios';
 import { Button, Container, Typography } from '@mui/material';
+import IUserPhotoListProp from '../../../Interfaces/UserProfile/IUserPhotoList-props';
 
-function UserPhotosList(prop: IUsername) {
+function UserPhotosList(prop: IUserPhotoListProp) {
     const [photos, setPhotos] = useState<PhotoDisplay[]>([]);
     const [numberOfPhotosToGet, setNumberOfPhotosToGet] = useState(9);
     const [totalUserPhotos, setTotalUserPhotos] = useState<number>(9);
     const [allPhotosFetchedFlag, setAllPhotosFetchedFlag] = useState(false);
 
-
     const fetchTotalNumberOfPhotos = async () => {
-        const result = await axios.get<number>(`https://localhost:7053/api/User/GetTotalNumberOfUserPhotos/${prop.username}`, {
+        let fetchTotalNumberOfPhotosUrl = "";
+        if(prop.displayUserPhotos === true)
+            fetchTotalNumberOfPhotosUrl = `https://localhost:7053/api/User/GetTotalNumberOfUserPhotos`;
+        else
+            fetchTotalNumberOfPhotosUrl = `https://localhost:7053/api/User/GetTotalNumberOfUserLikedPhotos`;
+        const result = await axios.get<number>(`${fetchTotalNumberOfPhotosUrl}/${prop.username}`, {
             headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
         });
         setTotalUserPhotos(result.data);
     }
 
     const fetchPhotos = async () => {
-        if (!allPhotosFetchedFlag) {
-            const result = await axios.get<PhotoDisplay[]>(`https://localhost:7053/api/User/GetUserPhotos/${prop.username}/${numberOfPhotosToGet}`, {
+            let fetchPhotosUrl = "";
+            if(prop.displayUserPhotos === true)
+                fetchPhotosUrl = `https://localhost:7053/api/User/GetUserPhotos`;
+            else
+                fetchPhotosUrl = `https://localhost:7053/api/User/GetUserLikedPhotos`;
+
+            console.log(fetchPhotosUrl);
+            const result = await axios.get<PhotoDisplay[]>(`${fetchPhotosUrl}/${prop.username}/${numberOfPhotosToGet}`, {
                 headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
             });
             setPhotos(result.data);
-        }
+            console.log(result.data)
+        
         if (numberOfPhotosToGet > totalUserPhotos)
             setAllPhotosFetchedFlag(true);
         else
@@ -45,11 +57,15 @@ function UserPhotosList(prop: IUsername) {
     }
 
     useEffect(() => {
+        setAllPhotosFetchedFlag(false);
+        setNumberOfPhotosToGet(9);
+        setPhotos([]);
         if (prop.username != "") {
             fetchTotalNumberOfPhotos();
             fetchPhotos();
         }
     }, [prop])
+
 
     return (
         <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>

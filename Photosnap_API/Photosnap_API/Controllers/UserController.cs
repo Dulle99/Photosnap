@@ -111,6 +111,20 @@ namespace Photosnap_API.Controllers
         }
 
         [HttpGet]
+        [Route("IsUserFollowed/{loggedUserUsername}/{userUsername}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetUserPhotos(string loggedUserUsername, string userUsername)
+        {
+            try
+            {
+                return new JsonResult(await this._userService.IsUserFollowed(loggedUserUsername, userUsername));
+
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpGet]
         [Route("GetUserPhotos/{username}/{numberOfPhotosToGet}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -119,6 +133,20 @@ namespace Photosnap_API.Controllers
             try
             {
                 return new JsonResult(await this._userService.GetUserPhotos(username, numberOfPhotosToGet));
+
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpGet]
+        [Route("GetUserLikedPhotos/{username}/{numberOfPhotosToGet}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetUserLikedPhotos(string username, int numberOfPhotosToGet)
+        {
+            try
+            {
+                return new JsonResult(await this._userService.GetUserLikedPhotos(username, numberOfPhotosToGet));
 
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
@@ -138,6 +166,7 @@ namespace Photosnap_API.Controllers
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
+
         [HttpGet]
         [Route("GetTotalNumberOfUserPhotos/{username}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -147,6 +176,20 @@ namespace Photosnap_API.Controllers
             try
             {
                 return new JsonResult(await this._userService.GetTotalNumberOfUserPhotos(username));
+
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpGet]
+        [Route("GetTotalNumberOfUserLikedPhotos/{username}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetTotalNumberOfLikedPhotos(string username)
+        {
+            try
+            {
+                return new JsonResult(await this._userService.GetTotalNumberOfUserLikedPhotos(username)); ;
 
             }
             catch (Exception ex) { return BadRequest(ex.Message); }

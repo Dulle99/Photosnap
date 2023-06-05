@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using Photosnap_Mongodb.DTO_s.PhotoDTO;
 using Photosnap_Mongodb.DTO_s.UserDTO;
 using Photosnap_Mongodb.Models;
 using Photosnap_Mongodb.Service;

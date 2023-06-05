@@ -27,6 +27,7 @@ export default function PhotoCard(prop: PhotoDisplay) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [numberOfPhotoLikes, setNumberOfPhotosToGet] = useState(prop.numberOfLikes);
     const [showCommentsFlag, setShowCommentsFlag] = useState(false);
+    const [userProfilePreview, setUserProfilePreview] = useState(false);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -60,6 +61,9 @@ export default function PhotoCard(prop: PhotoDisplay) {
         }
     }
 
+    const usernameClicked: React.MouseEventHandler<HTMLButtonElement> = () => {
+        setUserProfilePreview(true);
+    }
     const commentsButtonClicked: React.MouseEventHandler<HTMLButtonElement> = () => {
         let userLogged = window.sessionStorage.getItem('token') !== null ? true : false;
         if(userLogged)
@@ -90,6 +94,8 @@ export default function PhotoCard(prop: PhotoDisplay) {
 
     return (
         <>
+            {userProfilePreview ? <Navigate to={prop.authorUsername === sessionStorage.getItem('username') ? "/MyProfile" : "/UserProfile"}
+                                                   state={{ username: prop.authorUsername }} /> : ""}
             {deleteButtonClicked === true ? <YesNoDialog deletePhoto={deletePhoto} dialogText='Are you sure you want to delete the photo?' /> : ""}
             {showCommentsFlag === true? <CommentsDialog photoId={prop.photoId} openDialog={showCommentsFlag} closeDialog={closeDialog} /> : ""}
             <Card  >
@@ -138,6 +144,7 @@ export default function PhotoCard(prop: PhotoDisplay) {
                     }
                     title={prop.authorUsername}
                     subheader={prop.numberOfFollowers}
+                    onClick={usernameClicked}
                 />
                 <CardMedia
                     component="img"
