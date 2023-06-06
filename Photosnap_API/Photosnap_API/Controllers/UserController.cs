@@ -114,7 +114,7 @@ namespace Photosnap_API.Controllers
         [Route("IsUserFollowed/{loggedUserUsername}/{userUsername}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetUserPhotos(string loggedUserUsername, string userUsername)
+        public async Task<IActionResult> IsUserFollowed(string loggedUserUsername, string userUsername)
         {
             try
             {

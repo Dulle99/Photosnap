@@ -73,7 +73,7 @@ function UserBasicInformation(username: IUsername) {
                     setSelfProfilePreview(true);
                 else {
                     setSelfProfilePreview(false);
-
+                    checkIfUserIsFollowed();
                 }
             }
         }

@@ -1,7 +1,7 @@
 type Comment = {
     commentContent: string,
-    authorOfTheContent: string,
-    authroOfCommentProfilePicture :string,
+    authorOfCommentUsername: string,
+    authorOfCommentProfilePhoto :string,
     commentId: string
 }
 export default Comment
