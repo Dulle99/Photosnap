@@ -1,17 +1,25 @@
 import { Avatar } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import HeaderButton from "./Header-Button";
 
 
 function HeaderLoggedUserButtons(){
     const [profilePicture, setProfilePicture] = useState<String>();
-
+    const navigate = useNavigate();
+    
     useEffect(() =>{
         if(sessionStorage.getItem("profilePicture") != undefined && sessionStorage.getItem("profilePicture") != null)
             setProfilePicture(`data:image/jpeg;base64,${sessionStorage.getItem('profilePicture')}`);
-
     }, []);
+
+    const logout: React.MouseEventHandler<HTMLAnchorElement> = () =>{
+        window.sessionStorage.setItem('token','');
+        window.sessionStorage.setItem('username','');
+        window.sessionStorage.setItem('profilePhoto', '');
+        window.sessionStorage.setItem('isUserLogged', 'false');
+
+    }
     return (
         <>
             <Link to='/ExplorePhotosnap' style={{ textDecoration: 'none' }} >
@@ -26,7 +34,7 @@ function HeaderLoggedUserButtons(){
                 <HeaderButton buttonName='My profile' />
             </Link>
 
-            <Link to='/Logout' style={{ textDecoration: 'none' }}>
+            <Link to='/ExplorePhotosnap' style={{ textDecoration: 'none' }} onClick={logout}>
                 <HeaderButton buttonName='Logout' />
             </Link>
 

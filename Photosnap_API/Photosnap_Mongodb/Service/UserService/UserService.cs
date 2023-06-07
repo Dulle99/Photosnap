@@ -302,20 +302,23 @@ namespace Photosnap_Mongodb.Service.UserService
                 throw new Exception("User not found");
         }
 
-        public async Task AddCategoryOfInterest(string userUsername, string categoryName)
+        public async Task AddCategoryOfInterest(string userUsername, List<string> categoryNames)
         {
             var user = await HelpMethods.GetDocumentByFieldValue(this._userCollection, "Username", userUsername);
-
             var categoryCollection = this._mongoDB.GetCollection<PhotoCategory>(PhotosnapCollections.PhotoCategory);
-            var photoCategory = await HelpMethods.GetDocumentByFieldValue(categoryCollection, "CategoryName", categoryName);
 
             if (user != null && categoryCollection != null)
             {
-                if (user.PhotoCategoriesOfInterest.Exists(category => category.PhotoCategoryId == photoCategory.PhotoCategoryId))
-                    throw new Exception("User already have category added to his interests.");
-
-                await HelpMethods.PushValueInFieldCollection(this._userCollection, "UserId", user.UserId, "PhotoCategoriesOfInterest", photoCategory);
-
+                foreach(var category in categoryNames)
+                {
+                    var photoCategory = await HelpMethods.GetDocumentByFieldValue(categoryCollection, "CategoryName", category);
+                    if (photoCategory != null)
+                        if (user.PhotoCategoriesOfInterest.Exists(category => category.PhotoCategoryId == photoCategory.PhotoCategoryId))
+                            continue;
+                        else
+                            await HelpMethods.PushValueInFieldCollection(this._userCollection, "UserId", user.UserId,
+                                                                         "PhotoCategoriesOfInterest", photoCategory);
+                }
             }
             else
                 throw new Exception("Objects not found.");

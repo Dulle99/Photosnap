@@ -97,6 +97,10 @@ function PhotoForm(prop: PhotoFormProps) {
 
     }
 
+    useEffect(() => {
+        document.title = `Post photo`;
+    },[])
+
     return (
         <>
             <Container component="main" maxWidth="md">

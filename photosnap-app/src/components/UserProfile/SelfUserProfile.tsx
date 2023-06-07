@@ -35,6 +35,9 @@ function SelfUserProfile() {
 
     },[displayUserPostsFlag]);
 
+    useEffect(() => {
+        document.title = `My profile`;
+    },[])
 
     return (
         <>

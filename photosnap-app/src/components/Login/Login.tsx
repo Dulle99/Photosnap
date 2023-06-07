@@ -52,6 +52,10 @@ function Login(prop: IUserLoggedStatusChange) {
         document.title = "Login";
     }, []);
 
+    useEffect(() => {
+        document.title = `Login`;
+    },[])
+
     return (
         <Container >
             {isLoginSuccesful ? <Navigate to={"/homepage"} /> : ""}

@@ -16,11 +16,11 @@ function App() {
 
   function userLogged() {
     setToken(sessionStorage.getItem('token'));
-    navigate('/homepage', {replace: true});
+    navigate('/homepage', { replace: true });
   }
 
   useEffect(() => {
-    let path = sessionStorage.getItem('token') == null ? "/ExplorePhotosnap" : "/homepage"; 
+    let path = sessionStorage.getItem('token') == null ? "/ExplorePhotosnap" : "/homepage";
     if (window.location.pathname === '/') {
       navigate(path, { replace: true });
     }
@@ -30,24 +30,39 @@ function App() {
     setToken(sessionStorage.getItem('token'));
   }, [token]);
 
-  return (
+  if (token != null) {
+    return (
+      <>
+        <Routes>
+          <Route path='/' element={<Header />}>
+            <Route path='homepage' element={<Homepage />} />
+            <Route path='ExplorePhotosnap' element={<ExplorePhotos />} />
+            <Route path='MyProfile' element={<SelfUserProfile />} >
+            </Route>
+            <Route path='UserProfile' element={<UserProfile />} />
+            <Route path='EditPhoto/:photoId' element={<PhotoForm isEditForm={true} />} />
+            <Route path='PostPhoto' element={<PhotoForm isEditForm={false} />} />
+          </Route>
+          <Route path='Login' element={<Login userLogged={userLogged} />} />
+          <Route path='Register' element={<Register userLogged={userLogged} />} />
+
+        </Routes>
+      </>
+    );
+  }
+  else {
+    return(
     <>
       <Routes>
         <Route path='/' element={<Header />}>
           <Route path='homepage' element={<Homepage />} />
-          <Route path='ExplorePhotosnap' element={<ExplorePhotos/>} />
-          <Route path='MyProfile' element={<SelfUserProfile />} >
-          </Route>
-          <Route path='UserProfile' element={<UserProfile />}/>
-            <Route path='EditPhoto/:photoId' element={<PhotoForm isEditForm={true} />} />
-          <Route path='PostPhoto' element={<PhotoForm isEditForm={false}  />} />
+          <Route path='ExplorePhotosnap' element={<ExplorePhotos />} />
         </Route>
         <Route path='Login' element={<Login userLogged={userLogged} />} />
         <Route path='Register' element={<Register userLogged={userLogged} />} />
-
       </Routes>
     </>
-  );
+  )}
 }
 
 export default App;

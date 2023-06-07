@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Box, Button, Divider, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import DialogItemsType from "../../../../Interfaces/UserProfile/DialogProps/DialogItemsEnum";
 import UserItemType from "../../../../Types/UserTypes/UserItemType";
@@ -8,6 +8,7 @@ import CategoryItem from "./Items/CategoryItem";
 import DialogItemsProp from "../../../../Interfaces/UserProfile/DialogProps/IDialogItems";
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from "axios";
+import SelectPhotoCategory from "../../../PhotoCategory/SelectPhotoCategory";
 
 
 
@@ -17,6 +18,7 @@ function DialogItems(props: DialogItemsProp) {
     const [numberOfItemsToGet, setNumberOfItemsToGet] = useState(5);
     const [allItemsPulledFlag, setAllItemsPulledFlag] = useState(false);
     const [userWatchSelfProfileFlag, setUserWatchSelfProfileFlag] = useState(false);
+    const [selectedPhotoCategories, setSelectedPhotoCategories] = useState<string[]>([]);
 
     const handleLoadMoreButton: React.MouseEventHandler<HTMLButtonElement> = (e) => {
         loadData();
@@ -40,6 +42,7 @@ function DialogItems(props: DialogItemsProp) {
             },
         });
         setCategories(categories.filter(c => c.categoryName != e.currentTarget.id));
+        setSelectedPhotoCategories(selectedPhotoCategories.filter(c => c != e.currentTarget.id));
     }
 
     function GetFetchUrl(): string {
@@ -90,6 +93,20 @@ function DialogItems(props: DialogItemsProp) {
     useEffect(() => {
         loadData();
     }, []);
+
+    useEffect(()=>{
+        var params = new URLSearchParams();
+        selectedPhotoCategories.forEach(category => {
+            params.append('categoryNames',category);
+        })
+        axios.put(`https://localhost:7053/api/User/AddCategoryOfInterest/${props.username}`, undefined, {
+            headers: {
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem("token")
+            },
+            params: params
+        });
+        loadData();
+    }, [selectedPhotoCategories]);
 
     if (props.itemsType === DialogItemsType.listOfFollowers) {
         return (
@@ -146,6 +163,8 @@ function DialogItems(props: DialogItemsProp) {
                         <Button onClick={handleLoadMoreButton} sx={{ background: '#E65664', marginTop: 5, textTransform: 'none' }}>
                             <Typography color='#FFFFFF'>Load more</Typography>
                         </Button>}
+                        <Divider />
+                    <SelectPhotoCategory setSelectedPhotoCategories={setSelectedPhotoCategories} selectedPhotoCategories={[]} />
                 </Box>
             </>
         );

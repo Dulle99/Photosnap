@@ -34,6 +34,10 @@ function Homepage() {
         fetchPhotos(numberOfPhotosToGet);
     }, []);
 
+    useEffect(() => {
+        document.title = `Homepage`;
+    },[])
+
     return (
         <>
             <Container sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', alignItems: 'center' }} >

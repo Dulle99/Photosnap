@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import PhotoDisplay from "../../Interfaces/Photo/IPhotoDisplay";
 import SelectPhotoCategory from "../PhotoCategory/SelectPhotoCategory";
 import axios from "axios";
-import { stringify } from "querystring";
-import qs from "qs";
+import CategoryItemType from "../../Types/CategoryType/CategoryItemType";
 
 function ExplorePhotos() {
     const [photos, setPhotos] = useState<PhotoDisplay[]>([]);
@@ -35,6 +34,19 @@ function ExplorePhotos() {
         setNumberOfPhotosToGet(numberOfPhotosToGet +30);
     }
 
+    const fetchUsersPhotoIntersts = async () =>{
+        const result = await axios.get<CategoryItemType[]>(`https://localhost:7053/api/User/GetUserListOfPhotoInterests/${window.sessionStorage.getItem('username')}/100`,
+        {
+            headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
+        });
+
+        let usersPhotoCategoryOfInterest: string[] = [];
+        if(result.status === 200){
+            result.data.forEach((category) =>{usersPhotoCategoryOfInterest.push(category.categoryName)});
+            setSelectedPhotoCategories(usersPhotoCategoryOfInterest);
+        }
+    }
+
     useEffect(() => {
         if (selectedPhotoCategories.length >= 1) {
             fetchPhotos(30);
@@ -42,8 +54,14 @@ function ExplorePhotos() {
     }, [selectedPhotoCategories])
 
     useEffect(()=>{
+        if(window.sessionStorage.getItem('username') != null)
+            fetchUsersPhotoIntersts();
         fetchPhotos(30);
     },[]);
+
+    useEffect(() => {
+        document.title = `Explore photosnap`;
+    },[])
 
     return (<>
         <Container sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', alignItems: 'center' }} >

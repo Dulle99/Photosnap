@@ -17,7 +17,7 @@ namespace Photosnap_Mongodb.Service.UserService
         public Task<bool> IsUserFollowed(string loggedUserUsername, string username);
         public Task FollowUser(string loggedUserUsername, string userUsernameToBeFollowed);
         public Task UnfollowUser(string loggedUserUsername, string userUsernameForUnfollowing);
-        public Task AddCategoryOfInterest(string userUsername, string  categoryName);
+        public Task AddCategoryOfInterest(string userUsername, List<string> categoryNames);
         public Task RemoveCategoryOfInterest(string userUsername, string categoryName);
 
         public Task<List<PhotoDTO>> GetUserPhotos(string username, int numberOfPhotosToGet);

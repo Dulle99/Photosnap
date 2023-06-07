@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -21,6 +22,7 @@ namespace Photosnap_API.Controllers
 
         [HttpPost]
         [Route("PostPhoto")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PostPhoto([FromForm]BasicPhotoDTO basicPhotoDTO)
@@ -37,8 +39,10 @@ namespace Photosnap_API.Controllers
             }
         }
 
+
         [HttpPost]
         [Route("AddComment")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddComment([FromForm] BasicCommentDTO comment)
@@ -57,6 +61,7 @@ namespace Photosnap_API.Controllers
 
         [HttpPut]
         [Route("EditPhoto")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> EditPhoto([FromForm] EditPhotoDTO editPhotoDTO)
@@ -71,6 +76,7 @@ namespace Photosnap_API.Controllers
 
         [HttpPut]
         [Route("LikePhotoButton/{userUsername}/{photoId}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> LikePhotoButton(string userUsername, string photoId)
@@ -89,6 +95,7 @@ namespace Photosnap_API.Controllers
 
         [HttpDelete]
         [Route("DeletePhoto/{photoId}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeletePhoto(string photoId)

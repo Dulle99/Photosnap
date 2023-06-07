@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Photosnap_API.Jwt;
@@ -56,6 +57,7 @@ namespace Photosnap_API.Controllers
 
         [HttpPut]
         [Route("Follow/{username}/{usernameToBeFollowed}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Follow(string username, string usernameToBeFollowed)
@@ -70,6 +72,7 @@ namespace Photosnap_API.Controllers
 
         [HttpPut]
         [Route("Unfollow/{username}/{usernameToBeUnfollowed}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Unfollow(string username, string usernameToBeUnfollowed)
@@ -83,14 +86,15 @@ namespace Photosnap_API.Controllers
         }
 
         [HttpPut]
-        [Route("AddCategoryOfInterest/{username}/{categoryName}")]
+        [Route("AddCategoryOfInterest/{username}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddCategoryOfInterest(string username, string categoryName)
+        public async Task<IActionResult> AddCategoryOfInterest([FromQuery] List<string> categoryNames, string username)
         {
             try
             {
-                await _userService.AddCategoryOfInterest(username, categoryName);
+                await _userService.AddCategoryOfInterest(username, categoryNames);
                 return Ok();
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
@@ -98,6 +102,7 @@ namespace Photosnap_API.Controllers
 
         [HttpPut]
         [Route("RemoveCategoryOfInterest/{username}/{categoryName}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RemoveCategoryOfInterest(string username, string categoryName)
@@ -140,6 +145,7 @@ namespace Photosnap_API.Controllers
 
         [HttpGet]
         [Route("GetUserLikedPhotos/{username}/{numberOfPhotosToGet}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetUserLikedPhotos(string username, int numberOfPhotosToGet)
