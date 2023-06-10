@@ -9,13 +9,15 @@ function Header() {
     const [path, setPath] = useState("ExplorePhotosnap");
     useEffect(() => {
         const token = sessionStorage.getItem('token');
-        if (token == null || token.length == 0)
+        if (token == null || token.length == 0){
             setIsUserLogged(false);
+            setPath("ExplorePhotosnap")
+        }
         else{
             setPath("homepage")
             setIsUserLogged(true);
         }
-    }, [])
+    }, [window.sessionStorage.getItem('isUserLogged')])
 
     return (
         <>

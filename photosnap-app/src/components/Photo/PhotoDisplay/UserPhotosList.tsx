@@ -39,7 +39,7 @@ function UserPhotosList(prop: IUserPhotoListProp) {
                 headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
             });
             setPhotos(result.data);
-            console.log(result.data)
+            console.log(`slike ${photos}`)
         
         if (numberOfPhotosToGet > totalUserPhotos)
             setAllPhotosFetchedFlag(true);
@@ -67,12 +67,21 @@ function UserPhotosList(prop: IUserPhotoListProp) {
     }, [prop])
 
 
+    if(photos.length == 0){
+        return(
+        <>
+            <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                <Typography>No posts</Typography>
+            </Container>
+        </>
+    )}
+    else{
     return (
         <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
             <ImageList sx={{ width: 1000, height: 950, flexWrap: "wrap" }} cols={3} >
                 {photos.map((photo, ind) => (
                     <ImageListItem key={ind} >
-                        <PhotoCard photoId={photo.photoId} photo={photo.photo} description={photo.description.slice(0, 40) + "..."}
+                        <PhotoCard photoId={photo.photoId} photo={photo.photo} description={photo.description}
                             numberOfFollowers={photo.numberOfFollowers} numberOfLikes={photo.numberOfLikes} numberOfComments={photo.numberOfComments} photoDeleted={photoDeleted}
                             authorUsername={photo.authorUsername} authorProfilePhoto={photo.authorProfilePhoto} categoryName={photo.categoryName} categoryColor={photo.categoryColor} />
                     </ImageListItem>
@@ -88,6 +97,6 @@ function UserPhotosList(prop: IUserPhotoListProp) {
                 }}>Load more</Button> : ""}
         </Container>
 
-    );
+    );}
 }
 export default UserPhotosList;

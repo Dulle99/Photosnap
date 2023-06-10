@@ -1,5 +1,6 @@
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
+using Photosnap_API.MongoIndexing;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,7 @@ builder.Services.AddSwaggerGen();
 
 var client = new MongoClient(builder.Configuration.GetSection("MongoDBConnectionSettings:Server").Value);
 var database = client.GetDatabase(builder.Configuration.GetSection("MongoDBConnectionSettings:Database").Value);
+MongoDbIndexing.InitializeIndexes(database);
 builder.Services.AddSingleton(database);
 
 #endregion ConnectingToDatabase

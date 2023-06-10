@@ -14,9 +14,7 @@ function HeaderLoggedUserButtons(){
     }, []);
 
     const logout: React.MouseEventHandler<HTMLAnchorElement> = () =>{
-        window.sessionStorage.setItem('token','');
-        window.sessionStorage.setItem('username','');
-        window.sessionStorage.setItem('profilePhoto', '');
+        window.sessionStorage.clear();
         window.sessionStorage.setItem('isUserLogged', 'false');
 
     }

@@ -56,7 +56,8 @@ function ExplorePhotos() {
     useEffect(()=>{
         if(window.sessionStorage.getItem('username') != null)
             fetchUsersPhotoIntersts();
-        fetchPhotos(30);
+        else
+            fetchPhotos(30);
     },[]);
 
     useEffect(() => {
@@ -86,6 +87,7 @@ function ExplorePhotos() {
                 ))}
             </Box>
 
+            {photos.length < numberOfPhotosToGet ? " " :
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Button onClick={loadMoreButtonClick} variant="contained" sx={{
                     mt: 3, mb: 2, textAlign: 'center', background: '#BA1B2A', ':hover': {
@@ -93,7 +95,7 @@ function ExplorePhotos() {
                         color: 'FFFFFF',
                     },
                 }}>Load more</Button>
-            </Box>
+            </Box>}
         </Container>
     </>);
 }

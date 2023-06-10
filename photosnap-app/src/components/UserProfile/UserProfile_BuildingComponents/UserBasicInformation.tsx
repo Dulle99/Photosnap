@@ -23,7 +23,7 @@ function UserBasicInformation(username: IUsername) {
             else
                 urlType = `https://localhost:7053/api/User/Follow/${loggedUserUsername}/${username.username}`;
 
-            const result = await axios.put(urlType, {
+            const result = await axios.put(urlType,undefined, {
                 headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
             });
 

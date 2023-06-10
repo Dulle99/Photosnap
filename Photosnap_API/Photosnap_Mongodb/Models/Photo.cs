@@ -22,7 +22,6 @@ namespace Photosnap_Mongodb.Models
 
         public DateTime PublicationDate { get; set; }
 
-        //TODO Pitati profesira da li je dobra praksa da kreiram posebnu kolekciju tipa AuthorBasic sa osnovnim informacijama i da onda to emebdujem.
         public User AuthorOfThePhoto { get; set; }
 
         public PhotoCategory Category { get; set; }

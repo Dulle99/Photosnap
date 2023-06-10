@@ -164,7 +164,8 @@ function DialogItems(props: DialogItemsProp) {
                             <Typography color='#FFFFFF'>Load more</Typography>
                         </Button>}
                         <Divider />
-                    <SelectPhotoCategory setSelectedPhotoCategories={setSelectedPhotoCategories} selectedPhotoCategories={[]} />
+                    {window.sessionStorage.getItem('username') === props.username ?
+                    <SelectPhotoCategory setSelectedPhotoCategories={setSelectedPhotoCategories} selectedPhotoCategories={[]} /> : "" }
                 </Box>
             </>
         );

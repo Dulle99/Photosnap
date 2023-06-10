@@ -10,7 +10,7 @@ import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
 import PhotoDisplay from '../../Interfaces/Photo/IPhotoDisplay';
-import { Box, Chip, Menu, MenuItem } from '@mui/material';
+import { Box, Button, Chip, Menu, MenuItem } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link, Navigate, Outlet, useNavigate, useNavigation } from 'react-router-dom';
 import PhotoFormProps from '../../Interfaces/Photo/IPhotoForm';
@@ -52,7 +52,7 @@ export default function PhotoCard(prop: PhotoDisplay) {
     const likeButtonClicked: React.MouseEventHandler<HTMLButtonElement> = async () => {
         let username = sessionStorage.getItem('username'); 
         if (username !== null) {
-            const result = await axios.put<number>(`https://localhost:7053/api/Photo/LikePhotoButton/${username}/${prop.photoId}`, {
+            const result = await axios.put<number>(`https://localhost:7053/api/Photo/LikePhotoButton/${username}/${prop.photoId}`,undefined, {
                 headers: { 'Authorization': 'Bearer ' + window.sessionStorage.getItem("token") },
             });
 
@@ -101,7 +101,10 @@ export default function PhotoCard(prop: PhotoDisplay) {
             <Card  >
                 <CardHeader
                     avatar={
-                        <Avatar src={`data:image/jpeg;base64,${prop.authorProfilePhoto}`} />
+                        <Button onClick={usernameClicked}>
+                            <Avatar src={`data:image/jpeg;base64,${prop.authorProfilePhoto}`}  />
+                        </Button>
+                        
                     }
 
                     action={
@@ -142,9 +145,8 @@ export default function PhotoCard(prop: PhotoDisplay) {
                                 </> : <></>
                         }
                     }
-                    title={prop.authorUsername}
+                    title={prop.authorUsername }
                     subheader={prop.numberOfFollowers}
-                    onClick={usernameClicked}
                 />
                 <CardMedia
                     component="img"

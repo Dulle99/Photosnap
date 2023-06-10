@@ -57,6 +57,7 @@ function Homepage() {
                     ))}
                 </Box>
 
+                {photos.length < numberOfPhotosToGet ? " " :
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Button onClick={loadMoreButtonClick} variant="contained" sx={{
                         mt: 3, mb: 2, textAlign: 'center', background: '#BA1B2A', ':hover': {
@@ -64,7 +65,7 @@ function Homepage() {
                             color: 'FFFFFF',
                         },
                     }}>Load more</Button>
-                </Box>
+                </Box>}
 
 
             </Container>

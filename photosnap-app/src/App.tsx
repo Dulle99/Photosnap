@@ -55,7 +55,6 @@ function App() {
     <>
       <Routes>
         <Route path='/' element={<Header />}>
-          <Route path='homepage' element={<Homepage />} />
           <Route path='ExplorePhotosnap' element={<ExplorePhotos />} />
         </Route>
         <Route path='Login' element={<Login userLogged={userLogged} />} />
